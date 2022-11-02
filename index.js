@@ -15,11 +15,11 @@ function onLaunch(error)
 {
     if (error)
     {
-        console.log('Error: ', error)
+        console.log('Error: ', error);
     }
     else
     {
-        console.log('Server live; port ' + PORT + '...')
+        console.log('Server live; port...');
     }
 }
 
