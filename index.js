@@ -6,14 +6,12 @@ const app = express();
 app.use(express.static(__dirname + '/front/public'));
 app.use('/', router);
 
-const PORT = process.env.PORT || 8080;
-
 app.get('/test', function(req, res)
 {
     console.log('GET req received');
 });
 
-app.listen(PORT, onLaunch());
+app.listen(process.env.PORT || 8080, onLaunch());
 
 function onLaunch(error)
 {
