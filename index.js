@@ -1,11 +1,16 @@
 const express = require('express');
+const path = require('path');
+const router = require(__dirname + '/front/router/pages.js');
 const app = express();
 
-const PORT = 8080;
+app.use(express.static(__dirname + '/front/public'));
+app.use('', router);
 
-app.get('', function(req, res)
+const PORT = process.env.PORT || 8080;
+
+app.get('/test', function(req, res)
 {
-    res.sendFile(__dirname + '/front/index.html')
+    console.log('GET req received');
 });
 
 app.listen(PORT, onLaunch());
