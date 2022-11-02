@@ -11,8 +11,6 @@ app.get('/test', function(req, res)
     console.log('GET req received');
 });
 
-app.listen(process.env.PORT || 8080, onLaunch());
-
 function onLaunch(error)
 {
     if (error)
@@ -24,3 +22,5 @@ function onLaunch(error)
         console.log('Server live; port ' + PORT + '...')
     }
 }
+
+app.listen(process.env.PORT || 8080, onLaunch());
