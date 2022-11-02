@@ -4,7 +4,7 @@ const router = require(__dirname + '/front/router/pages.js');
 const app = express();
 
 app.use(express.static(__dirname + '/front/public'));
-app.use('', router);
+app.use('/', router);
 
 const PORT = process.env.PORT || 8080;
 
