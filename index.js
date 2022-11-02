@@ -4,7 +4,7 @@ const router = require(__dirname + '/front/router/pages.js');
 const app = express();
 
 app.use(express.static(__dirname + '/front/public'));
-app.use('/portal', router);
+app.use('/', router);
 
 app.get('/test', function(req, res)
 {
