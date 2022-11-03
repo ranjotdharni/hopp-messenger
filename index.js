@@ -23,4 +23,4 @@ function onLaunch(error)
     }
 }
 
-app.listen(process.env.PORT || 8080, onLaunch());
+app.listen(process.env.PORT || 8080, onLaunch());   //Ensure listen call is at the end of server
