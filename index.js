@@ -29,7 +29,6 @@ async function guard(req, res, next)
     {   
         console.log('1');
         res.sendFile(__dirname + '/front/index.html');
-        res.end()
         return
     }
     const sessionToken = req.cookies['session_token'];
@@ -37,7 +36,6 @@ async function guard(req, res, next)
     {
         console.log('2');
         res.sendFile(__dirname + '/front/index.html');
-        res.end();
         return
     }
 
