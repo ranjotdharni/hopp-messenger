@@ -8,6 +8,7 @@ const homeURL_local = 'http://localhost:8080/home';
 
 var createFlag = false;
 
+window.onload = checkSesh;
 createBtn.onclick = updateFlag;
 form.onsubmit = handleSubmit;
 
@@ -88,5 +89,16 @@ async function create(u, p)
     else
     {
         console.log(final.message);
+    }
+}
+
+async function checkSesh()
+{   
+    const cookieD = await fetch(homeURL_heroku);
+    const final = await cookieD.text();
+
+    if (final.includes('This is the Hopp main page; welcome.'))
+    {
+        location.href = homeURL_heroku;
     }
 }

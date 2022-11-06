@@ -28,14 +28,14 @@ async function guard(req, res, next)
     if (!req.cookies)
     {   
         console.log('1');
-        res.sendFile(__dirname + '/front/expired.html');
+        res.sendFile(__dirname + '/front/index.html');
         return
     }
     const sessionToken = req.cookies['session_token'];
     if (!sessionToken)
     {
         console.log('2');
-        res.sendFile(__dirname + '/front/expired.html');
+        res.sendFile(__dirname + '/front/index.html');
         return
     }
 
@@ -44,7 +44,7 @@ async function guard(req, res, next)
     if (new Date() > authResult[0][0].expires_at)
     {
         console.log('3');
-        res.sendFile(__dirname + '/front/expired.html');
+        res.sendFile(__dirname + '/front/index.html');
         return
     }
 
@@ -76,7 +76,7 @@ app.put('/portal', async function(req, res)
 
         const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
         
-        res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true, secure: true});
+        res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true});
         res.send(JSON.parse('{"status":200, "message":"(Session created)"}'))
         res.end();
     }
