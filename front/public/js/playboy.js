@@ -94,7 +94,7 @@ async function create(u, p)
 
 async function checkSesh()
 {   
-    const cookieD = await fetch('http://hopp-messenger.herokuapp.com/home');
+    const cookieD = await fetch('https://hopp-messenger.herokuapp.com/home');
     const final = await cookieD.text();
 
     if (final.includes('This is the Hopp main page; welcome.'))
