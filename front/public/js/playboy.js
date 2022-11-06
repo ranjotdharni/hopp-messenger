@@ -55,7 +55,7 @@ async function login(u, p)
 
     if (final.status != 400)
     {
-        location.href = homeURL_local;
+        location.href = homeURL_heroku;
     }
     else
     {
