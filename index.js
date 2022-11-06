@@ -76,7 +76,7 @@ app.put('/portal', async function(req, res)
 
         const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
         
-        res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true});
+        res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true, secure: true});
         res.send(JSON.parse('{"status":200, "message":"(Session created)"}'))
         res.end();
     }
@@ -160,5 +160,5 @@ async function authSession(token)
     return result;
 }
 
-exports.authentic = guard;
+
 app.listen(process.env.PORT || 8080, onLaunch());   //Ensure listen call is at the end of server
