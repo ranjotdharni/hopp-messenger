@@ -10,6 +10,132 @@
     <title>Hopp</title>
 </head>
 <body>
+    <div class = "wire" id = "w1">
+        <div id ="top">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 14 1440 42">
+                <filter id="blurTop">
+                    <feOffset  dx="0" dy="8"></feOffset>
+                    <feGaussianBlur  result="offset-blur" stdDeviation="11"></feGaussianBlur>
+                    <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                    <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                    <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                    <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurTop)" fill="#171717" fill-opacity="1" d="M0,160L16,170.7C32,181,64,203,96,186.7C128,171,160,117,192,117.3C224,117,256,171,288,176C320,181,352,139,384,128C416,117,448,139,480,128C512,117,544,75,576,85.3C608,96,640,160,672,186.7C704,213,736,203,768,192C800,181,832,171,864,144C896,117,928,75,960,69.3C992,64,1024,96,1056,117.3C1088,139,1120,149,1152,144C1184,139,1216,117,1248,122.7C1280,128,1312,160,1344,165.3C1376,171,1408,149,1424,138.7L1440,128L1440,0L1424,0C1408,0,1376,0,1344,0C1312,0,1280,0,1248,0C1216,0,1184,0,1152,0C1120,0,1088,0,1056,0C1024,0,992,0,960,0C928,0,896,0,864,0C832,0,800,0,768,0C736,0,704,0,672,0C640,0,608,0,576,0C544,0,512,0,480,0C448,0,416,0,384,0C352,0,320,0,288,0C256,0,224,0,192,0C160,0,128,0,96,0C64,0,32,0,16,0L0,0Z"></path>
+            </svg>
+        </div>
+        <div id = "bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 19 1440 45">
+                <filter id="blurBottom">
+                        <feOffset  dx="0" dy="-10"></feOffset>
+                        <feGaussianBlur  result="offset-blur" stdDeviation="14"></feGaussianBlur>
+                        <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                        <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                        <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                        <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurBottom)" fill="#171717" fill-opacity="1" d="M0,160L16,170.7C32,181,64,203,96,186.7C128,171,160,117,192,117.3C224,117,256,171,288,176C320,181,352,139,384,128C416,117,448,139,480,128C512,117,544,75,576,85.3C608,96,640,160,672,186.7C704,213,736,203,768,192C800,181,832,171,864,144C896,117,928,75,960,69.3C992,64,1024,96,1056,117.3C1088,139,1120,149,1152,144C1184,139,1216,117,1248,122.7C1280,128,1312,160,1344,165.3C1376,171,1408,149,1424,138.7L1440,128L1440,320L1424,320C1408,320,1376,320,1344,320C1312,320,1280,320,1248,320C1216,320,1184,320,1152,320C1120,320,1088,320,1056,320C1024,320,992,320,960,320C928,320,896,320,864,320C832,320,800,320,768,320C736,320,704,320,672,320C640,320,608,320,576,320C544,320,512,320,480,320C448,320,416,320,384,320C352,320,320,320,288,320C256,320,224,320,192,320C160,320,128,320,96,320C64,320,32,320,16,320L0,320Z"></path>
+            </svg>
+    </div>
+
+    <div class = "wire" id = "w2">
+        <div id ="top">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 12 1440 42">
+                <filter id="blurTop2">
+                    <feOffset  dx="0" dy="8"></feOffset>
+                    <feGaussianBlur  result="offset-blur" stdDeviation="11"></feGaussianBlur>
+                    <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                    <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                    <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                    <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurTop2)" fill="#171717" fill-opacity="1" d="M0,160L40,160C80,160,160,160,240,138.7C320,117,400,75,480,64C560,53,640,75,720,74.7C800,75,880,53,960,64C1040,75,1120,117,1200,122.7C1280,128,1360,96,1400,80L1440,64L1440,0L1400,0C1360,0,1280,0,1200,0C1120,0,1040,0,960,0C880,0,800,0,720,0C640,0,560,0,480,0C400,0,320,0,240,0C160,0,80,0,40,0L0,0Z"></path>
+            </svg>
+        </div>
+        <div id = "bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 17 1440 45">
+                <filter id="blurBottom2">
+                    <feOffset  dx="0" dy="-10"></feOffset>
+                    <feGaussianBlur  result="offset-blur" stdDeviation="14"></feGaussianBlur>
+                    <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                    <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                    <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                    <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurBottom2)" fill="#171717" fill-opacity="1" d="M0,160L40,160C80,160,160,160,240,138.7C320,117,400,75,480,64C560,53,640,75,720,74.7C800,75,880,53,960,64C1040,75,1120,117,1200,122.7C1280,128,1360,96,1400,80L1440,64L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z"></path>
+            </svg>
+    </div>
+
+    <div class = "wire" id = "w3">
+        <div id ="top">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="65 16 1440 41">
+                <filter id="blurTop3">
+                    <feOffset  dx="0" dy="10"></feOffset>
+                    <feGaussianBlur  result="offset-blur" stdDeviation="13"></feGaussianBlur>
+                    <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                    <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                    <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                    <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurTop3)" fill="#171717" fill-opacity="1" d="M0,64L12,80C24,96,48,128,72,138.7C96,149,120,139,144,128C168,117,192,107,216,133.3C240,160,264,224,288,245.3C312,267,336,245,360,245.3C384,245,408,267,432,256C456,245,480,203,504,181.3C528,160,552,160,576,176C600,192,624,224,648,234.7C672,245,696,235,720,218.7C744,203,768,181,792,186.7C816,192,840,224,864,208C888,192,912,128,936,101.3C960,75,984,85,1008,106.7C1032,128,1056,160,1080,181.3C1104,203,1128,213,1152,218.7C1176,224,1200,224,1224,186.7C1248,149,1272,75,1296,90.7C1320,107,1344,213,1368,224C1392,235,1416,149,1428,106.7L1440,64L1440,0L1428,0C1416,0,1392,0,1368,0C1344,0,1320,0,1296,0C1272,0,1248,0,1224,0C1200,0,1176,0,1152,0C1128,0,1104,0,1080,0C1056,0,1032,0,1008,0C984,0,960,0,936,0C912,0,888,0,864,0C840,0,816,0,792,0C768,0,744,0,720,0C696,0,672,0,648,0C624,0,600,0,576,0C552,0,528,0,504,0C480,0,456,0,432,0C408,0,384,0,360,0C336,0,312,0,288,0C264,0,240,0,216,0C192,0,168,0,144,0C120,0,96,0,72,0C48,0,24,0,12,0L0,0Z"></path>
+            </svg>
+        </div>
+        <div id = "bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="65 19 1440 43.5">
+                <filter id="blurBottom3">
+                    <feOffset  dx="0" dy="-5"></feOffset>
+                    <feGaussianBlur  result="offset-blur" stdDeviation="11.5"></feGaussianBlur>
+                    <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                    <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                    <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                    <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurBottom3)" fill="#171717" fill-opacity="1" d="M0,64L12,80C24,96,48,128,72,138.7C96,149,120,139,144,128C168,117,192,107,216,133.3C240,160,264,224,288,245.3C312,267,336,245,360,245.3C384,245,408,267,432,256C456,245,480,203,504,181.3C528,160,552,160,576,176C600,192,624,224,648,234.7C672,245,696,235,720,218.7C744,203,768,181,792,186.7C816,192,840,224,864,208C888,192,912,128,936,101.3C960,75,984,85,1008,106.7C1032,128,1056,160,1080,181.3C1104,203,1128,213,1152,218.7C1176,224,1200,224,1224,186.7C1248,149,1272,75,1296,90.7C1320,107,1344,213,1368,224C1392,235,1416,149,1428,106.7L1440,64L1440,320L1428,320C1416,320,1392,320,1368,320C1344,320,1320,320,1296,320C1272,320,1248,320,1224,320C1200,320,1176,320,1152,320C1128,320,1104,320,1080,320C1056,320,1032,320,1008,320C984,320,960,320,936,320C912,320,888,320,864,320C840,320,816,320,792,320C768,320,744,320,720,320C696,320,672,320,648,320C624,320,600,320,576,320C552,320,528,320,504,320C480,320,456,320,432,320C408,320,384,320,360,320C336,320,312,320,288,320C264,320,240,320,216,320C192,320,168,320,144,320C120,320,96,320,72,320C48,320,24,320,12,320L0,320Z"></path>
+            </svg>
+    </div>
+
+    <div class = "wire" id = "w4">
+        <div id ="top">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 15 1440 42">
+                
+                <path filter="url(#blurTop)" fill="#171717" fill-opacity="1" d="M0,160L16,170.7C32,181,64,203,96,186.7C128,171,160,117,192,117.3C224,117,256,171,288,176C320,181,352,139,384,128C416,117,448,139,480,128C512,117,544,75,576,85.3C608,96,640,160,672,186.7C704,213,736,203,768,192C800,181,832,171,864,144C896,117,928,75,960,69.3C992,64,1024,96,1056,117.3C1088,139,1120,149,1152,144C1184,139,1216,117,1248,122.7C1280,128,1312,160,1344,165.3C1376,171,1408,149,1424,138.7L1440,128L1440,0L1424,0C1408,0,1376,0,1344,0C1312,0,1280,0,1248,0C1216,0,1184,0,1152,0C1120,0,1088,0,1056,0C1024,0,992,0,960,0C928,0,896,0,864,0C832,0,800,0,768,0C736,0,704,0,672,0C640,0,608,0,576,0C544,0,512,0,480,0C448,0,416,0,384,0C352,0,320,0,288,0C256,0,224,0,192,0C160,0,128,0,96,0C64,0,32,0,16,0L0,0Z"></path>
+            </svg>
+        </div>
+        <div id = "bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="40 19 1440 45">
+                
+                <path filter="url(#blurBottom)" fill="#171717" fill-opacity="1" d="M0,160L16,170.7C32,181,64,203,96,186.7C128,171,160,117,192,117.3C224,117,256,171,288,176C320,181,352,139,384,128C416,117,448,139,480,128C512,117,544,75,576,85.3C608,96,640,160,672,186.7C704,213,736,203,768,192C800,181,832,171,864,144C896,117,928,75,960,69.3C992,64,1024,96,1056,117.3C1088,139,1120,149,1152,144C1184,139,1216,117,1248,122.7C1280,128,1312,160,1344,165.3C1376,171,1408,149,1424,138.7L1440,128L1440,320L1424,320C1408,320,1376,320,1344,320C1312,320,1280,320,1248,320C1216,320,1184,320,1152,320C1120,320,1088,320,1056,320C1024,320,992,320,960,320C928,320,896,320,864,320C832,320,800,320,768,320C736,320,704,320,672,320C640,320,608,320,576,320C544,320,512,320,480,320C448,320,416,320,384,320C352,320,320,320,288,320C256,320,224,320,192,320C160,320,128,320,96,320C64,320,32,320,16,320L0,320Z"></path>
+            </svg>
+    </div>
+
+    <div class = "wire" id = "w5">
+        <div id ="top">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="45 20 1440 40">
+                <filter id="blurTop5">
+                    <feOffset  dx="0" dy="10"></feOffset>
+                    <feGaussianBlur  result="offset-blur" stdDeviation="13"></feGaussianBlur>
+                    <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                    <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                    <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                    <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurTop5)" fill="#171717" fill-opacity="1" d="M0,128L40,117.3C80,107,160,85,240,112C320,139,400,213,480,234.7C560,256,640,224,720,192C800,160,880,128,960,128C1040,128,1120,160,1200,176C1280,192,1360,192,1400,192L1440,192L1440,0L1400,0C1360,0,1280,0,1200,0C1120,0,1040,0,960,0C880,0,800,0,720,0C640,0,560,0,480,0C400,0,320,0,240,0C160,0,80,0,40,0L0,0Z"></path>
+            </svg>
+        </div>
+        <div id = "bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="45 22 1440 51">
+                <filter id="blurBottom5">
+                        <feOffset  dx="0" dy="0"></feOffset>
+                        <feGaussianBlur  result="offset-blur" stdDeviation="10"></feGaussianBlur>
+                        <feComposite  in="SourceGraphic" in2="offset-blur" operator="out" result="inverse"></feComposite>
+                        <feFlood  flood-color="#FF008B" flood-opacity=".75" result="color"></feFlood>
+                        <feComposite  in="color" in2="inverse" operator="in" result="shadow"></feComposite>
+                        <feComposite  in="shadow" in2="SourceGraphic" operator="over"></feComposite>
+                </filter>
+                <path filter="url(#blurBottom5)" fill="#171717" fill-opacity="1" d="M0,128L40,117.3C80,107,160,85,240,112C320,139,400,213,480,234.7C560,256,640,224,720,192C800,160,880,128,960,128C1040,128,1120,160,1200,176C1280,192,1360,192,1400,192L1440,192L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z"></path>
+            </svg>
+    </div>
+
     <div id = "logincontainer">
         <span id = dashbar>Hopp - Login</span>
 

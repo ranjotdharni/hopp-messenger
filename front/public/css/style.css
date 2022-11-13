@@ -1,6 +1,8 @@
+@import 'anim.css';
+
 body
 {
-    background: #011627;
+    background:#171717;
     width: 100%;
     margin: 0;
 }
@@ -84,4 +86,80 @@ body
     background-color: rgb(255, 51, 102);
     text-shadow: 0 0 0.5vh whitesmoke;
     box-shadow: 0 0 2rem rgb(255, 51, 102);
+}
+
+.wire
+{
+    background: #171717;
+    margin: 0;
+    margin-top: 7vh;
+    width: 100%;
+    height: 3.3em;
+    animation-name: pulse;
+    animation-duration: 3.17s;
+    animation-iteration-count: infinite;
+}
+
+@media (min-width: 1900px)
+{
+    .wire
+    {
+        height: 4.3em;
+    }
+}
+
+#w1
+{
+    animation-direction: alternate-reverse;
+    animation-delay: 1s;
+}
+
+#w2
+{
+    animation-delay: 3.67s;
+    animation-direction: alternate-reverse;
+}
+
+#w3
+{
+    animation-delay: 2s;
+    animation-direction: alternate;
+}
+
+#w4
+{
+    animation-delay: 4.759s;
+    animation-direction: alternate;
+}
+
+#w5
+{
+    animation-delay: 2.67s;
+    animation-direction: alternate-reverse;
+}
+
+path
+{
+    transform: scale(1.25, 0.275);
+}
+
+#w3 path
+{
+    transform: scale(1.48, 0.22);
+}
+
+#w4 path
+{
+    transform: scale(1.25, 0.275);
+}
+
+#w5 path
+{
+    transform: scale(1.25, 0.25);
+}
+
+#bottom
+{
+    position: relative;
+    top: -2.5rem;
 }
