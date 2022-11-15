@@ -41,9 +41,16 @@ async function guard(req, res, next)
 
     const authResult = await authSession(sessionToken);
 
-    if (new Date() > authResult[0][0].expires_at)
+    if (authResult instanceof Error)
     {
         console.log('3');
+        res.sendFile(__dirname + '/front/index.html');
+        return
+    }
+
+    if (new Date() > authResult[0][0].expires_at)
+    {
+        console.log('4');
         res.sendFile(__dirname + '/front/index.html');
         return
     }
