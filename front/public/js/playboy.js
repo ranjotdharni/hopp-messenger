@@ -1,39 +1,107 @@
-const createBtn = document.getElementById('createbutton');
-const form = document.getElementById('loginform');
+const loginform = document.getElementById('loginform');
+const createform = document.getElementById('createform');
+const checks = document.querySelectorAll('#validdash li i');
 
 const requestURL_heroku = 'https://hopp-messenger.herokuapp.com/portal';
 const requestURL_local = 'http://localhost:8080/portal';
 const homeURL_heroku = 'https://hopp-messenger.herokuapp.com/home';
 const homeURL_local = 'http://localhost:8080/home';
 
-var createFlag = false;
-
 window.onload = checkSesh;
-createBtn.onclick = updateFlag;
-form.onsubmit = handleSubmit;
+createform.onsubmit = handleCreate;
+loginform.onsubmit = handleLogin;
+document.getElementById('createuser').addEventListener('input', flagBurn);
+document.getElementById('createpass').addEventListener('input', flagBurn);
+document.getElementById('createreenter').addEventListener('input', flagBurn);
 
-function updateFlag(event)
-{   
-    createFlag = true;
-}
-
-async function handleSubmit(event)
+function flagBurn()
 {
-    event.preventDefault();
-
-    var user = form.elements.userinput.value;
-    var pass = form.elements.passwordinput.value;
-
-    if (createFlag)
-    {       
-        createFlag = false;
-        await create(user, pass);
+    if (createform.elements.createuser.value.trim() == createform.elements.createpass.value.trim())
+    {
+        checks[0].style.color = 'red';
+        checks[0].innerText = 'close';
     }
     else
     {
-        await login(user, pass);
+        checks[0].style.color = 'darkgreen';
+        checks[0].innerText = 'done';
     }
-    
+
+    if (createform.elements.createpass.value.trim() != createform.elements.createreenter.value.trim())
+    {
+        checks[1].style.color = 'red';
+        checks[1].innerText = 'close';
+    }
+    else
+    {
+        checks[1].style.color = 'darkgreen';
+        checks[1].innerText = 'done';
+    }
+
+    if (createform.elements.createuser.value.trim().length < 8 || createform.elements.createpass.value.trim().length < 8)
+    {
+        checks[2].style.color = 'red';
+        checks[2].innerText = 'close';
+    }
+    else
+    {
+        checks[2].style.color = 'darkgreen';
+        checks[2].innerText = 'done';
+    }
+
+    if (createform.elements.createuser.value.trim().length > 24 || createform.elements.createpass.value.trim().length > 24)
+    {
+        checks[3].style.color = 'red';
+        checks[3].innerText = 'close';
+    }
+    else
+    {
+        checks[3].style.color = 'darkgreen';
+        checks[3].innerText = 'done';
+    }
+}
+
+async function handleLogin(event)
+{
+    event.preventDefault();
+
+    if(loginform.elements.loginuser.value.trim().length == 0 || loginform.elements.loginpass.value.trim().length == 0)
+    {
+        return
+    }
+
+    var user = loginform.elements.loginuser.value;
+    var pass = loginform.elements.loginpass.value;
+    await login(user, pass);
+}
+
+async function handleCreate(event)
+{
+    event.preventDefault();
+
+    if (createform.elements.createuser.value.trim() == createform.elements.createpass.value.trim())
+    {
+        return
+    }
+
+    if (createform.elements.createpass.value.trim() != createform.elements.createreenter.value.trim())
+    {
+        return
+    }
+
+    if (createform.elements.createuser.value.trim().length < 8 || createform.elements.createpass.value.trim().length < 8)
+    {
+        return
+    }
+
+    if (createform.elements.createuser.value.trim().length > 24 || createform.elements.createpass.value.trim().length > 24)
+    {
+        return
+    }
+
+    var user = loginform.elements.createuser.value;
+    var pass = loginform.elements.createpass.value;
+    await create(user, pass);
 }
 
 async function login(u, p)
@@ -94,6 +162,8 @@ async function create(u, p)
 
 async function checkSesh()
 {   
+    flagBurn();
+
     const cookieD = await fetch('https://hopp-messenger.herokuapp.com/home');
     const final = await cookieD.text();
 

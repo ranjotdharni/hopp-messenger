@@ -145,6 +145,16 @@ path
     outline: none;
 }
 
+#loginform input:hover
+{
+    background-color: rgba(41, 39, 39, 0.75);
+}
+
+#createform input:hover
+{
+    background-color: rgba(41, 39, 39, 0.75);
+}
+
 #userwrap::before
 {
     content: "Username:";
@@ -342,7 +352,7 @@ p
     width: 30vw;
 }
 
-#checks
+#validdash li i
 {
     font-size: 1em;
     position: relative;
