@@ -15,10 +15,10 @@ app.use('/', router);
 
 const pool = mysql.createPool(
     {
-        host: DB_HOST,
-        user: DB_NAME,
-        password: DB_PASSWORD,
-        database: DB_USER,
+        host: 'us-cdbr-east-06.cleardb.net',
+        user: 'heroku_c652c3e3ec19316',
+        password: 'b664ed0d',
+        database: 'b1e4f143a9feea',
         timezone: '+00:00'
     }
 ).promise();
