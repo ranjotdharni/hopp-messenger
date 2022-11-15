@@ -16,9 +16,9 @@ app.use('/', router);
 const pool = mysql.createPool(
     {
         host: 'us-cdbr-east-06.cleardb.net',
-        user: 'heroku_c652c3e3ec19316',
+        user: 'b1e4f143a9feea',
         password: 'b664ed0d',
-        database: 'b1e4f143a9feea',
+        database: 'heroku_c652c3e3ec19316',
         timezone: '+00:00'
     }
 ).promise();
