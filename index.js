@@ -41,7 +41,7 @@ async function guard(req, res, next)
 
     const authResult = await authSession(sessionToken);
 
-    if (authResult instanceof Error)
+    if (authResult instanceof Error || !authResult[0][0].length)
     {
         console.log('3');
         res.sendFile(__dirname + '/front/index.html');
