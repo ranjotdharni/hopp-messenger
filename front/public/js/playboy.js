@@ -99,8 +99,8 @@ async function handleCreate(event)
         return
     }
 
-    var user = loginform.elements.createuser.value;
-    var pass = loginform.elements.createpass.value;
+    var user = createform.elements.createuser.value;
+    var pass = createform.elements.createpass.value;
     await create(user, pass);
 }
 
