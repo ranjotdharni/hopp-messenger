@@ -2,11 +2,6 @@ const loginform = document.getElementById('loginform');
 const createform = document.getElementById('createform');
 const checks = document.querySelectorAll('#validdash li i');
 
-const requestURL_heroku = 'https://hopp-messenger.herokuapp.com/portal';
-const requestURL_local = 'http://localhost:8080/portal';
-const homeURL_heroku = 'https://hopp-messenger.herokuapp.com/home';
-const homeURL_local = 'http://localhost:8080/home';
-
 window.onload = checkSesh;
 createform.onsubmit = handleCreate;
 loginform.onsubmit = handleLogin;
@@ -106,7 +101,7 @@ async function handleCreate(event)
 
 async function login(u, p)
 {
-        const response = await fetch(requestURL_heroku,
+        const response = await fetch(window.location.origin + '/portal',
             { 
                 method: 'PUT',
                 body: JSON.stringify(
@@ -124,7 +119,7 @@ async function login(u, p)
 
     if (final.status != 400)
     {
-        location.href = homeURL_heroku;
+        location.href = window.location.origin + '/home';
     }
     else
     {
@@ -134,7 +129,7 @@ async function login(u, p)
 
 async function create(u, p)
 {
-    const response = await fetch(requestURL_heroku,
+    const response = await fetch(window.location.origin + '/portal',
         {
             method: 'POST',
             body: JSON.stringify(
@@ -164,11 +159,11 @@ async function checkSesh()
 {   
     flagBurn();
 
-    const cookieD = await fetch('https://hopp-messenger.herokuapp.com/home');
+    const cookieD = await fetch(window.location.origin + '/home');
     const final = await cookieD.text();
 
     if (final.includes('This is the Hopp main page; welcome.'))
     {
-        location.href = homeURL_heroku;
+        location.href = window.location.origin + '/home';
     }
 }

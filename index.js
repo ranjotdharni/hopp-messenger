@@ -28,14 +28,14 @@ async function guard(req, res, next)
     if (!req.cookies)
     {   
         console.log('1');
-        res.sendFile(__dirname + '/front/index.html');
+        res.redirect('/');
         return
     }
     const sessionToken = req.cookies['session_token'];
     if (!sessionToken)
     {
         console.log('2');
-        res.sendFile(__dirname + '/front/index.html');
+        res.redirect('/');
         return
     }
 
