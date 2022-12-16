@@ -53,6 +53,7 @@ async function guard(req, res, next)
     if (now > authResult[0][0].expires_at)
     {
         console.log(now);
+        console.log(authResult[0][0].expires_at);
         console.log('4');
         res.sendFile(__dirname + '/front/index.html');
         return
