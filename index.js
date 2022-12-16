@@ -84,6 +84,7 @@ app.put('/portal', async function(req, res)
         const current = new Date();
         current.setHours(current.getHours() + 2);
         const sessionExpiresAt = current;
+        console.log("Generated: " + sessionExpiresAt);
 
         const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
         
