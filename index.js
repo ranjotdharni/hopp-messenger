@@ -19,7 +19,7 @@ const pool = mysql.createPool(
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
-        timezone: 'utc-5'
+        timezone: '-05:00'
     }
 ).promise();
 
