@@ -3,7 +3,7 @@ const path = require('path');
 
 const router = express.Router();
 
-router.get('/', (req, res) =>
+router.all('/', (req, res) =>
 {
     res.redirect('/home');
 });
