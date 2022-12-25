@@ -12,7 +12,6 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(__dirname + '/front/public'));
 app.use('/home', guard) //Ex: must come after cookie-parser b/cause this method uses cookie-parser
-app.use('/', guard);
 app.use('/', router);
 
 const client_secret = process.env.client_secret;
@@ -37,14 +36,14 @@ async function guard(req, res, next)
     if (!req.cookies)
     {   
         console.log('1');
-        res.redirect('/');
+        res.sendFile(__dirname + '/front/index.html');
         return
     }
     const sessionToken = req.cookies['session_token'];
     if (!sessionToken)
     {
         console.log('2');
-        res.redirect('/');
+        res.sendFile(__dirname + '/front/index.html');
         return
     }
 
