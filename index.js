@@ -12,6 +12,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(__dirname + '/front/public'));
 app.use('/home', guard) //Ex: must come after cookie-parser b/cause this method uses cookie-parser
+app.use('/', guard);
 app.use('/', router);
 
 const client_secret = process.env.client_secret;
