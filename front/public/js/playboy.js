@@ -8,6 +8,11 @@ loginform.onsubmit = handleLogin;
 document.getElementById('createuser').addEventListener('input', flagBurn);
 document.getElementById('createpass').addEventListener('input', flagBurn);
 document.getElementById('createreenter').addEventListener('input', flagBurn);
+setTimeout(function() {
+    document.getElementById("window").classList.remove("fadeaway");
+}, 500);
+
+var session;
 
 function flagBurn()
 {
@@ -159,6 +164,9 @@ async function checkSesh()
 {   
     flagBurn();
 
+    var middle = await fetch(window.location.origin + '/portal');
+    session = await middle.json();
+
     const cookieD = await fetch(window.location.origin + '/home');
     const final = await cookieD.text();
 
@@ -166,4 +174,22 @@ async function checkSesh()
     {
         location.href = window.location.origin + '/home';
     }
+
+    await getResource();
+}
+
+async function getResource()
+{
+    console.log('fetching resources...');
+    let buffer = await fetch("https://api.spotify.com/v1/albums/4yP0hdKOZPNshxUOjY0cZj?market=US", {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + session.session_key,
+        },
+    });
+
+    var final = await buffer.json();
+    document.getElementById('filter').style.background = 'url(' + final.images[0].url + ')';
 }

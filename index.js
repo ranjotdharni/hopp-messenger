@@ -1,3 +1,4 @@
+const fetch = require('node-fetch');
 const mysql = require('mysql2');
 const express = require('express');
 const path = require('path');
@@ -12,6 +13,10 @@ app.use(cookieParser());
 app.use(express.static(__dirname + '/front/public'));
 app.use('/home', guard) //Ex: must come after cookie-parser b/cause this method uses cookie-parser
 app.use('/', router);
+
+const client_secret = process.env.client_secret;
+var genesis;
+var instance;
 
 const pool = mysql.createPool(
     {
@@ -61,6 +66,22 @@ async function guard(req, res, next)
     next();
 }
 
+app.get('/portal', function(req, res)
+{
+    var expCheck = new Date(instance);
+    expCheck.setMinutes(expCheck.getMinutes() + 50);
+
+    if (new Date() >= expCheck)
+    {
+        console.log('Token expired: grabbing fresh access token...');
+        grabToken();
+    }
+
+    var buffer = '{"session_key":"' + genesis.access_token + '"}';
+    res.send(JSON.parse(buffer));
+    res.end();
+});
+
 app.put('/portal', async function(req, res)
 {   
     const auth = await getAuthInfo(req.body.username)
@@ -108,15 +129,40 @@ app.post('/portal', async function(req, res)
     }
 });
 
-function onLaunch(error)
+async function onLaunch(error)
 {
+    await grabToken();
+
     if (error)
     {
         console.log('Error: ', error);
     }
     else
     {
-        console.log('Server live; port...');
+        console.log('Server live; PORT ' + (process.env.PORT || 8080));
+    }
+}
+
+async function grabToken()
+{
+    let buffer = await fetch('https://accounts.spotify.com/api/token?grant_type=client_credentials', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + client_secret,
+        },
+    });
+
+    genesis = await buffer.json();
+
+    if (genesis.error)
+    {
+        console.log(genesis.error.message);
+    }
+    else
+    {
+        instance = new Date();
+        console.log('Fresh Token Assigned: ' + genesis.access_token);
     }
 }
 
