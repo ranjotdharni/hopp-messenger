@@ -25,10 +25,8 @@ const pool = mysql.createPool(
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
         timezone: '-05:00',
-        dialectOptions: {
-            ssl: {
-                rejectUnauthorized: true,
-            },
+        ssl: {
+            rejectUnauthorized: true,
         }
     }
 ).promise();
