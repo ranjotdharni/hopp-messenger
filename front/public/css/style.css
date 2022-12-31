@@ -22,9 +22,9 @@ body
 
 #filter
 {
-    background: rgba(0, 0, 0, 1);
+    /*background: rgba(0, 0, 0, 1);
     background-repeat: no-repeat !important;
-    background-size: cover !important;
+    background-size: cover !important;*/
     width: 100vw;
     height: 100vh;
     margin: 0;

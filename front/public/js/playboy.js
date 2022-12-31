@@ -122,7 +122,7 @@ async function login(u, p)
 
     const final = await response.json();
 
-    if (final.status != 400)
+    if (final.status != 401)
     {
         location.href = window.location.origin + '/home';
     }
@@ -150,7 +150,7 @@ async function create(u, p)
 
     final = await response.json();
 
-    if (final.status != 400)
+    if (final.status != 401)
     {
         await login(u, p);
     }
@@ -167,8 +167,8 @@ async function checkSesh()
     var middle = await fetch(window.location.origin + '/portal');
     session = await middle.json();
 
-    const cookieD = await fetch(window.location.origin + '/home');
-    const final = await cookieD.text();
+    const textHTML = await fetch(window.location.origin + '/home');
+    const final = await textHTML.text();
 
     if (final.includes('This is the Hopp main page; welcome.'))
     {
@@ -191,5 +191,5 @@ async function getResource()
     });
 
     var final = await buffer.json();
-    document.getElementById('filter').style.background = 'url(' + final.images[0].url + ')';
+    document.getElementById('filter').src = 'https://burst.shopifycdn.com/photos/moody-green-vine-wall-texture.jpg?width=925&format=pjpg&exif=1&iptc=1';/*final.images[0].url;*/
 }
