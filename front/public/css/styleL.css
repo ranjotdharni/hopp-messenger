@@ -84,7 +84,12 @@ body
 .litty
 {
     color: var(--neon-base);
-    animation: lightUp 5s linear 1s 1 normal forwards;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base),
+        0px 0px 10px var(--neon-color), 0px 0px 20px var(--neon-color), 0px 0px 40px var(--neon-color),
+        0px 0px 50px var(--neon-color), 0px 0px 70px var(--neon-color), 0px 0px 100px var(--neon-color);
+    animation: lightUp 5s linear 0s 1 normal;
 }
 
 #dynamic-palette-container
@@ -130,10 +135,9 @@ body
 
 .textbox-title
 {
-    width: 30%;
+    min-width: 30% !important;
     height: 100%;
-    background-color: rgba(11, 11, 11);
-    color: aliceblue;
+    background-color: rgb(11, 11, 11);
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.75vw;
     display: flex;
@@ -144,29 +148,45 @@ body
     padding-right: 1%;
     border-top-left-radius: 1vw;
     border-bottom-left-radius: 1vw;
+    z-index: 2;
 }
 
 .textbox
 {
-    width: 70%;
+    min-width: 70%;
     height: 100%;
+    white-space: nowrap;
+    overflow-x: visible;
     background-color: rgba(11, 11, 11, 0);
-    color: aliceblue;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.75vw;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
     padding-left: 1%;
     border-top-right-radius: 1vw;
     border-bottom-right-radius: 1vw;
-    transition: color 0.5s linear;
+    z-index: 1;
+    position: relative;
 }
 
 .textfade
 {
-    color: rgb(11, 11, 11) !important;
+    color: rgba(11, 11, 11, 0) !important;
+    text-shadow: none !important;
+}
+
+.textslider
+{
+    transition: left 5s linear;
+}
+
+.sliderStop
+{
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
 }
 
 .arrowbtn
@@ -376,6 +396,10 @@ body
 
 @keyframes lightUp 
 {
+    0%
+    {
+        text-shadow: none;
+    }
     8.3333%
     {
         text-shadow: 1px 1px 10px var(--neon-base), -1px -1px 10px var(--neon-base),
@@ -399,6 +423,30 @@ body
         0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base),
         0px 0px 10px var(--neon-color), 0px 0px 20px var(--neon-color), 0px 0px 40px var(--neon-color),
         0px 0px 50px var(--neon-color), 0px 0px 70px var(--neon-color), 0px 0px 100px var(--neon-color);
+    }
+}
+
+@keyframes slideLeft
+{
+    0%
+    {
+        left: 0%;
+    }
+    25%
+    {
+        left: -10%;
+    }
+    50% 
+    {
+        left: -20%;
+    }
+    75% 
+    {
+        left: -10%;
+    }
+    100% 
+    {
+        left: 0%;
     }
 }
 

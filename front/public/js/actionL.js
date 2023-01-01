@@ -3,6 +3,7 @@ var resources = new Array(6);
 var bgMarker = 0;
 var feMarker = 0;
 var feOffset = 0;
+var paused = false;
 var previous;
 setInterval(refreshBG, 10000);
 setInterval(refreshFE, 8000);
@@ -83,9 +84,35 @@ async function freshHarvest()
     for (var z = 0; z < newText.length; z++)
     {
         newText[z].classList.add('textfade');
+        newText[z].classList.add('sliderStop');
+        newText[z].style.left = '0%';
+
         newText[z].innerText = resources[feMarker][z + 1];
+
+        if ((resources[feMarker][z + 1].length) > 30)
+        {
+            newText[z].style.alignItems = 'flex-start';
+            newText[z].classList.remove('sliderStop');
+        }
+        else
+        {
+            newText[z].style.alignItems = 'center';
+        }
+
         newText[z].classList.remove('textfade');
     }
+
+    setTimeout(function()
+    {
+        for (var z = 0; z < newText.length; z++)
+        {
+            if ((resources[feMarker][z + 1].length) > 30)
+            {
+                newText[z].classList.add('textslider');
+                newText[z].style.left = '-' + (((resources[feMarker][z + 1].length - 30) * 1.6667) + 5) + '%';
+            }
+        }
+    }, 2000);
 
     var temp = document.getElementsByClassName('dynamic-bg-image');
     
@@ -141,12 +168,10 @@ function refreshBG()
 
 function refreshFE()
 {
-    var newText = document.getElementsByClassName('textbox');
-    for (var z = 0; z < newText.length; z++)
+    if (!paused)
     {
-        newText[z].classList.add('textfade');
+        setDynamic(1);
     }
-    setDynamic(1);
 }
 
 function setDynamic(i)
@@ -156,7 +181,13 @@ function setDynamic(i)
     var lightMiddle = document.getElementsByClassName('lightbar-bottom');
     previous = feMarker;
 
-    lightMiddle[previous].classList.remove('lightbar-anim');
+    for (var z = 0; z < newText.length; z++)
+    {
+        newText[z].classList.add('textfade');
+        newText[z].classList.remove('textslider');
+        newText[z].classList.add('sliderStop');
+        newText[z].style.left = '0%';
+    }
 
     if (i < 0)
     {
@@ -221,9 +252,45 @@ function setDynamic(i)
 
     for (var z = 0; z < newText.length; z++)
     {
+        if ((resources[feMarker][z + 1].length) > 30)
+        {
+            newText[z].style.alignItems = 'flex-start';
+            newText[z].classList.remove('sliderStop');
+        }
+        else
+        {
+            newText[z].style.alignItems = 'center';
+        }
+    }
+
+    if (!paused)
+    {
+        lightMiddle[previous].classList.remove('lightbar-anim');
+        lightMiddle[feMarker].classList.add('lightbar-anim');
+    }
+    else
+    {
+        lightMiddle[previous].classList.remove('lightbar-anim');
+        lightMiddle[previous].style.width = '0%';
+        lightMiddle[feMarker].style.width = '100%';
+    }
+
+    for (var z = 0; z < newText.length; z++)
+    {
         newText[z].innerText = resources[feMarker][z + 1];
+
         newText[z].classList.remove('textfade');
     }
 
-    lightMiddle[feMarker].classList.add('lightbar-anim');
+    setTimeout(function()
+    {
+        for (var z = 0; z < newText.length; z++)
+        {
+            if ((resources[feMarker][z + 1].length) > 30)
+            {
+                newText[z].classList.add('textslider');
+                newText[z].style.left = '-' + (((resources[feMarker][z + 1].length - 30) * 1.6667) + 5) + '%';
+            }
+        }
+    }, 2000);
 }
