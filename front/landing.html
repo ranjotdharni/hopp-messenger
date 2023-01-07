@@ -22,7 +22,7 @@
             <div id = "dynamic-palette-headerbox" class = "dynamic-headerbox litty">What's Trending</div>
             <div id = "arrLeft" class = "arrowbtn">
                 <button id = "leftbtn" class = "arrClick">
-                    <span class="material-symbols-outlined">
+                    <span id = "left" class="material-symbols-outlined">
                         chevron_left
                     </span>
                 </button>
@@ -55,7 +55,7 @@
             </div>
             <div id = "arrRight" class = "arrowbtn">
                 <button id = "rightbtn" class = "arrClick">
-                    <span class="material-symbols-outlined">
+                    <span id = "right" class="material-symbols-outlined">
                         chevron_right
                     </span>
                 </button>
@@ -87,10 +87,56 @@
             </div>
         </div>
 
-        <div id = "static-palette-container"></div>
+        <div id = "static-palette-container">
+            <div id = "static-palette-headerbox" class = "dynamic-headerbox litty">Get Started</div>
+            <div id = "login-textbox" class = "static-textbox">
+                <p>
+                    Welcome to ChemiStreams! We offer a free, open-source,
+                    browser-to-browser messaging service with a musically personalised
+                    dashboard. Want to get started right away? Click below to open your
+                    own, personal ChemiStreams dashboard. You will have to make an 
+                    account first.
+                </p>
+                <button id = "homebtn">Home Page<span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+            <div id = "about-textbox" class = "static-textbox">
+                <p>
+                    Want to see the source code for this website? Check it out 
+                    on <a href = "https://github.com/">GitHub</a>! Click below 
+                    to see the repository. Want more details on the service? Discover new
+                    music that you'll love based on what you're currently listening to; scroll
+                    further and read below on the features it offers, or try it for yourself!
+                </p>
+                <button id = "aboutbtn"> About<span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+        </div>
     </div>
 
-    <div id = "pageBot"></div>
+    <div id = "pageBot">
+        <div class = "infobox-container"><img src = "/svg/messageImg.svg" /><div class = "splitter"></div>
+            <p>
+                Send one-on-one messages to your friends via their ChemiStreams account
+                in the browser. Create chatrooms and invite more friends for 
+                larger conversations. Connect with friends and share your musical
+                interests using fast, real-time WebSocket communication.
+            </p>
+        </div>
+        <div class = "infobox-container"><img src = "/svg/musicImg.svg" /><div class = "splitter"></div>
+            <p>
+                Set 'Beacon' artists, tracks, and genres to generate personalised
+                music recommendations. Our algorithm will then communicate with 
+                the Spotify API, and fill your dashboard accordingly with the returned
+                resources. You do not need a Spotify account to do this.
+            </p>
+        </div>
+        <div class = "infobox-container"><img src = "/svg/spotifyImg.svg" /><div class = "splitter"></div>
+            <p>
+                Connect to your Spotify account to have your Beacons set automatically 
+                for an even more personalised experience. ChemiStreams will NEVER store 
+                your private credentials for any third-party services.
+            </p>
+        </div>
+    </div>
 
     <script src = "/js/actionL.js"></script>
 </body>

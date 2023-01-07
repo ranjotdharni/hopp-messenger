@@ -12,7 +12,14 @@ body
     height: 150vh;
     overflow-x: hidden;
     margin: 0;
-    background: rgba(10, 9, 9. 0);
+    background: rgba(10, 9, 9, 0);
+}
+
+a
+{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: inherit;
+    color: var(--neon-base);
 }
 
 #parallax
@@ -281,6 +288,89 @@ body
     box-shadow: 0 1vh 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#static-palette-headerbox
+{
+    height: 10%;
+    width: 90%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.25vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.static-textbox
+{
+    height: 40%;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.static-textbox p
+{
+    height: 57.5%;
+    width: 90%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8vw;
+    color: var(--neon-base);
+    display: block;
+}
+
+#about-textbox p
+{
+    position: relative;
+    top: -10%;
+}
+
+.static-textbox button
+{
+    height: 12.5%;
+    width: 45%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75vw;
+    color: var(--neon-base);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    border: none;
+    border-radius: 1vw;
+    position: relative;
+    left: -22.5%;
+    background: rgba(255, 255, 255, 0);
+    border: solid 1px black;
+    text-shadow: none !important;
+    transition: all 0.025s linear;
+}
+
+.static-textbox button span
+{
+    color: inherit;
+    box-shadow: none !important;
+}
+
+.static-textbox button:hover, .static-textbox button:hover span
+{
+    cursor: pointer;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base),
+        0px 0px 10px var(--neon-color), 0px 0px 20px var(--neon-color), 0px 0px 40px var(--neon-color),
+        0px 0px 50px var(--neon-color), 0px 0px 70px var(--neon-color), 0px 0px 100px var(--neon-color);
+    box-shadow: -0.25vw 0.75vh 22px rgba(0, 0, 0, 0.75),
+        0.2vw -0.6vh 22px rgba(1, 1, 1, 0.25);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
 }
 
 .lightbar
@@ -354,6 +444,52 @@ body
     bottom: 0;
     background: rgb(21, 22, 22);
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.infobox-container
+{
+    height: 26.667%;
+    width: 90%;
+    background: #1d1d1d;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.infobox-container img
+{
+    height: 90%;
+    width: 15%;
+    margin-left: 2.5%;
+}
+
+.splitter
+{
+    width: 0.2%;
+    height: 95%;
+    margin-left: 2.25%;
+    border-radius: 1vw;
+    background: rgba(41, 39, 39, 0.75);
+}
+
+.infobox-container p
+{
+    height: 90%;
+    width: 63%;
+    margin-left: 4.75%;
+    color: var(--neon-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1vw;
 }
 
 .slideIn

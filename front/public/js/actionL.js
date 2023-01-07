@@ -4,9 +4,20 @@ var bgMarker = 0;
 var feMarker = 0;
 var feOffset = 0;
 var paused = false;
+var tickText;
 var previous;
+var iTick = setInterval(refreshFE, 8000);
 setInterval(refreshBG, 10000);
-setInterval(refreshFE, 8000);
+document.getElementById('homebtn').onclick = () =>
+{
+    location.href = window.location.origin + '/home';
+}
+document.getElementById('aboutbtn').onclick = () =>
+{
+    location.href = 'https://github.com/ranjotdharni/hopp-messenger';
+}
+document.getElementById('left').onclick = toLeft;
+document.getElementById('right').onclick = toRight;
 
 window.onload = newSesh;
 
@@ -172,6 +183,10 @@ function refreshFE()
     {
         setDynamic(1);
     }
+    else
+    {
+        clearInterval(iTick);
+    }
 }
 
 function setDynamic(i)
@@ -293,4 +308,47 @@ function setDynamic(i)
             }
         }
     }, 2000);
+}
+
+function toLeft()
+{
+    if (!paused)
+    {
+        paused = true;
+    }
+
+    textRight = false;
+    clearInterval(tickText);
+    tickText = setInterval(moveText, 8000);
+    setDynamic(-1);
+}
+
+function toRight()
+{
+    if (!paused)
+    {
+        paused = true;
+    }
+
+    textRight = false;
+    clearInterval(tickText);
+    tickText = setInterval(moveText, 8000);
+    setDynamic(1);
+}
+
+function moveText()
+{
+    var text = document.getElementsByClassName('textbox');
+
+    for (var i = 0; i < text.length; i++)
+    {
+        if (((resources[feMarker][i + 1].length) > 30) && (text[i].style.left != '0%'))
+        {
+            text[i].style.left = '0%';
+        }
+        else if (((resources[feMarker][i + 1].length) > 30) && (text[i].style.left == '0%'))
+        {
+            text[i].style.left = '-' + (((resources[feMarker][i + 1].length - 30) * 1.6667) + 5) + '%';
+        }
+    }
 }
