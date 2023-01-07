@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', (req, res) =>
 {
-    res.redirect('/home');
+    res.sendFile(path.resolve(__dirname + '/../landing.html'));
 });
 
 router.get('/home', (req, res) =>

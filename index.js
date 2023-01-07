@@ -91,12 +91,12 @@ app.put('/portal', async function(req, res)
     
     if (!auth[0].length)
     {
-        res.send(JSON.parse('{"status":400, "message":"(User not found)"}'));
+        res.send(JSON.parse('{"status":401, "message":"(User not found)"}'));
         res.end();
     }
     else if(req.body.password != auth[0][0].password)
     {
-        res.send(JSON.parse('{"status":400, "message":"(Username or Password incorrect)"}'));
+        res.send(JSON.parse('{"status":401, "message":"(Username or Password incorrect)"}'));
         res.end();
     }
     else
@@ -124,7 +124,7 @@ app.post('/portal', async function(req, res)
     if(result instanceof Error)
     {
         console.log("(duplicate entry; not injected)");
-        res.send(JSON.parse('{"status":400, "message":"(User already exists)"}')).end();
+        res.send(JSON.parse('{"status":401, "message":"(User already exists)"}')).end();
     }
     else
     {
