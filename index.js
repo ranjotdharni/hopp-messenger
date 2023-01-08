@@ -160,7 +160,7 @@ async function grabToken()
 
     if (genesis.error)
     {
-        console.log(genesis.error.message);
+        console.log('Token acquirement error: ' + genesis.error);
     }
     else
     {
