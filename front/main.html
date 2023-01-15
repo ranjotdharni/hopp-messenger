@@ -4,9 +4,50 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel = "stylesheet" href = "/css/dash.css">
     <title>ChemiStreams</title>
 </head>
 <body>
-    <h1>This is the ChemiStreams main page; welcome.</h1>
+    <div id = "dynamic-bg-container"></div>
+
+    <div id = "dashboard-container">
+        <div id = "dash-hud" class = "panel"></div>
+        <div id = "dash-control" class = "panel">
+            <div id = "control-header" class = "headerbox">Beacons</div>
+            <div id = "artist-input" class = "drop-input">
+                <input class = "search-input">
+                <ul id = "artist-dropbox">
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                    <p class = "artist-result result-box"></p>
+                </ul>
+            </div>
+            <div id = "track-input" class = "drop-input">
+                <input class = "search-input">
+                <ul id = "track-dropbox"></ul>
+            </div>
+            <div id = "genre-select" class = "drop-select">
+                <input class = "search-input">
+                <ul id = "genre-dropbox"></ul>
+            </div>
+            <div id = "beacon-select" class = "drop-select">
+                <input class = "search-input">
+                <ul id = "beacon-dropbox"></ul>
+            </div>
+            <button id = "control-fire">Fire</button>
+        </div>
+        <div id = "dash-recc" class = "panel"></div>
+        <div id = "dash-tethers" class = "panel"></div>
+    </div>
+
+    <script src = "/js/dynamic.js"></script>
 </body>
 </html>

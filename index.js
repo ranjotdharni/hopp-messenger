@@ -14,16 +14,16 @@ app.use(express.static(__dirname + '/front/public'));
 app.use('/home', guard) //Ex: must come after cookie-parser b/cause this method uses cookie-parser
 app.use('/', router);
 
-const client_secret = process.env.client_secret;
+const client_secret = process.env.client_secret || 'NjQ2ZjY4NjgzNmJjNDRlYzk4ZjU4MzQxNGQ4NGEyNjE6NjQ4MjU3MGNmZTViNDYxNTgzOWM4MzJlNTEwMDFlOTY=';
 var genesis;
 var instance;
 
 const pool = mysql.createPool(
     {
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
-        database: process.env.DB_NAME,
+        host: process.env.DB_HOST || 'us-east.connect.psdb.cloud',
+        user: process.env.DB_USER || 'y4roquoe2td3t11z1gl0',
+        password: process.env.DB_PASS || 'pscale_pw_S5qPjECxwaAa18g5c2j0lRBZ1R5wU2Xp5BYQL8jReoM',
+        database: process.env.DB_NAME || 'master',
         timezone: '-05:00',
         ssl: {
             rejectUnauthorized: true,

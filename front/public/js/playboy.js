@@ -170,7 +170,7 @@ async function checkSesh()
     const textHTML = await fetch(window.location.origin + '/home');
     const final = await textHTML.text();
 
-    if (final.includes('This is the Hopp main page; welcome.'))
+    if (final.includes('<link rel = "stylesheet" href = "/css/dash.css">'))
     {
         location.href = window.location.origin + '/home';
     }

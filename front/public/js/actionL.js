@@ -49,7 +49,7 @@ async function freshHarvest()
     });
 
     var final = await buffer.json();
-    rawData = final.albums;
+    var rawData = final.albums;
 
     for (var k = 0; k < resources.length; k++)
     {
