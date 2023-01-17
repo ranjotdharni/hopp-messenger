@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
     <link rel = "stylesheet" href = "/css/dash.css">
     <title>ChemiStreams</title>
 </head>
@@ -14,35 +16,73 @@
     <div id = "dashboard-container">
         <div id = "dash-hud" class = "panel"></div>
         <div id = "dash-control" class = "panel">
+            <label id = "artist-label" class = "control-label">Search Artist(s):</label>
+            <label id = "track-label" class = "control-label">Search Track(s):</label>
+            <label id = "genre-label" class = "control-label">Select Genre(s):</label>
+            <label id = "fire-label" class = "control-label">Fire</label>
             <div id = "control-header" class = "headerbox">Beacons</div>
             <div id = "artist-input" class = "drop-input">
                 <input class = "search-input">
                 <ul id = "artist-dropbox">
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
-                    <p class = "artist-result result-box"></p>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(0)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(1)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(2)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(3)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(4)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(5)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(6)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(7)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(8)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "artist-result"></p><button class = "result-box-button" onclick="addBeacon(9)"><span class="material-symbols-outlined">add</span></button></div>
                 </ul>
             </div>
             <div id = "track-input" class = "drop-input">
                 <input class = "search-input">
-                <ul id = "track-dropbox"></ul>
+                <ul id = "track-dropbox">
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(0)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(1)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(2)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(3)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(4)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(5)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(6)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(7)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(8)"><span class="material-symbols-outlined">add</span></button></div>
+                    <div class = "result-box"><p class = "track-result"></p><button class = "result-box-button" onclick="addBeacon(9)"><span class="material-symbols-outlined">add</span></button></div>
+                </ul>
             </div>
             <div id = "genre-select" class = "drop-select">
-                <input class = "search-input">
-                <ul id = "genre-dropbox"></ul>
+                <label tabindex="0">Genre List</label>
+                <ul id = "genre-dropbox">
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'pop')">Pop</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'rock')">Rock</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'electro')">Electro House</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'edm')">EDM</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'hip-hop')">Hip Hop</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'party')">Party</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'chill')">Chill</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'country')">Country</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'alternative')">Alternative</p></div>
+                    <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'anime')">Anime</p></div>
+                </ul>
             </div>
             <div id = "beacon-select" class = "drop-select">
-                <input class = "search-input">
-                <ul id = "beacon-dropbox"></ul>
+                <label tabindex="0">Beacon List</label>
+                <ul id = "beacon-dropbox">
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(0)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(1)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(2)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(3)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(4)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(5)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(6)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(7)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(8)"><span class="material-symbols-outlined">delete</span></button></div>
+                    <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(9)"><span class="material-symbols-outlined">delete</span></button></div>
+                </ul>
             </div>
-            <button id = "control-fire">Fire</button>
+            <button id = "control-fire" onclick="fireBeacons()"><span class="material-symbols-outlined">chevron_right</span></button>
+            <p id = "control-error" class = "invisible"></p>
         </div>
         <div id = "dash-recc" class = "panel"></div>
         <div id = "dash-tethers" class = "panel"></div>
