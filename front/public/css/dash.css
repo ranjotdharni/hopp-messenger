@@ -362,7 +362,7 @@ body
     top: 50%;
 }
 
-#control-fire
+.btn-style
 {
     width: 5%;
     height: 10%;
@@ -378,11 +378,9 @@ body
     align-items: center;
     justify-content: center;
     position: absolute;
-    left: 62%;
-    top: 68%;
 }
 
-#control-fire span
+.btn-style span
 {
     color: var(--neon-base);
     background-color: rgba(0, 0, 0, 0);
@@ -392,13 +390,19 @@ body
     justify-content: center;
 }
 
-#control-fire span:hover
+.btn-style span:hover
 {
     cursor: pointer;
     color: white;
     text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
         1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
         0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+#control-fire
+{
+    left: 62%;
+    top: 68%;
 }
 
 #fire-label
@@ -425,4 +429,49 @@ body
 .invisible
 {
     color: rgba(0, 0, 0, 0) !important;
+}
+
+#recc-header
+{
+    width: 90%;
+    height: 7.5%;
+    position: absolute;
+    left: 5%;
+    top: 2.5%;
+}
+
+#spotify-tag
+{
+    width: 10%;
+    height: 5%;
+    color: white;
+    font-size: 0.6vw;
+    font-family: 'JetBrains Mono', monospace;
+    background-color: #af2f2f;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 15%;
+    left: 85%;
+    transition: background-color 0.5s linear;
+}
+
+.connected
+{
+    background-color: var(--neon-color) !important;
+}
+
+#conn-label
+{
+    top: 70%;
+    left: 80%;
+}
+
+#recc-conn
+{
+    left: 91%;
+    top: 68%;
 }

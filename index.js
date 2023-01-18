@@ -132,6 +132,33 @@ app.post('/portal', async function(req, res)
     }
 });
 
+app.get('/request', async function(req, res)
+{
+    var code = req.query.code;
+    var uri = req.query.uri;
+
+    let buffer = await fetch('https://accounts.spotify.com/api/token?grant_type=authorization_code&code=' + code + '&redirect_uri=' + uri, 
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + client_secret,
+        },
+    });
+
+    let final = await buffer.json();
+
+    if (final.error)
+    {
+        console.log('Spotify Token Error: ' + final.error_description);
+        res.send(JSON.parse('{"error":"' + final.error_description + '"}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"token":"' + final.access_token + '", "refresh":"' + final.refresh_token + '"}')).end();
+    }
+});
+
 async function onLaunch(error)
 {
     await grabToken();

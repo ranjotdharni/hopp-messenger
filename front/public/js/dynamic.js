@@ -86,6 +86,16 @@ async function newSesh()
     var middle = await fetch(window.location.origin + '/portal');
     session = await middle.json();
 
+    if (sessionStorage.getItem('token'))
+    {
+        console.log(sessionStorage.getItem('token'));
+        document.getElementById('spotify-tag').classList.add('connected');
+    }
+    else
+    {
+        document.getElementById('spotify-tag').classList.remove('connected');
+    }
+
     await freshHarvest();
 }
 
@@ -316,4 +326,10 @@ async function fireBeacons()
         var final = await buffer.json();
         console.log(final);
     }
+}
+
+function connect()
+{
+    location.href = 'https://accounts.spotify.com/authorize?response_type=code&client_id=646f686836bc44ec98f583414d84a261'
+                    + '&redirect_uri=' + window.location.origin + '/middle&state=9564821374953801';
 }

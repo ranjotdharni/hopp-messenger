@@ -81,10 +81,16 @@
                     <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(9)"><span class="material-symbols-outlined">delete</span></button></div>
                 </ul>
             </div>
-            <button id = "control-fire" onclick="fireBeacons()"><span class="material-symbols-outlined">chevron_right</span></button>
+            <button id = "control-fire" class = "btn-style" onclick="fireBeacons()"><span class="material-symbols-outlined">chevron_right</span></button>
             <p id = "control-error" class = "invisible"></p>
         </div>
-        <div id = "dash-recc" class = "panel"></div>
+        <div id = "dash-recc" class = "panel">
+            <div id = "recc-header" class = "headerbox">Recommended</div>
+            <label id = "conn-label" class = "control-label">Connect</label>
+            <p id = "spotify-tag">Spotify</p>
+
+            <button id = "recc-conn" class = "btn-style" onclick="connect()"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
         <div id = "dash-tethers" class = "panel"></div>
     </div>
 
