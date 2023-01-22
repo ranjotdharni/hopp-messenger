@@ -475,3 +475,134 @@ body
     left: 91%;
     top: 68%;
 }
+
+#track-img
+{
+    width: 30%;
+    height: 70%;
+    position: absolute;
+    top: 20%;
+    left: 6%;
+}
+
+.recc-btn-span 
+{
+    width: 5%;
+    height: 12%;
+    font-size: 0.7vw;
+    font-family: 'JetBrains Mono', monospace;
+    border: none;
+    border-radius: 50%;
+    background-color:var(--page-base);
+    box-shadow: -3px 3px 3px rgba(0, 0, 0, 0.75),
+                3px 3px 3px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+.recc-btn-span span
+{
+    color: var(--neon-base);
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.recc-btn-span span:hover
+{
+    cursor: pointer;
+    color: white;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+#prevTrack
+{
+    position: absolute;
+    top: 56%;
+    left: 40%;
+}
+
+#togglePlay
+{
+    width: 5.5% !important;
+    height: 14% !important;
+    border-radius: 10%;
+    position: absolute;
+    top: 54.5%;
+    left: 52.5%;
+}
+
+#nextTrack
+{
+    position: absolute;
+    top: 56%;
+    left: 66%;
+}
+
+#name-wrap
+{
+    width: 30%;
+    height: 5.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: absolute;
+    left: 40%;
+    top: 30%;
+}
+
+#artist-wrap
+{
+    width: 30%;
+    height: 5.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: absolute;
+    left: 40%;
+    top: 40%;
+}
+
+.recc-tag
+{
+    width: auto;
+    height: 100%;
+    font-size: 0.7vw;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    position: relative;
+    left: 0%;
+    transition-property: left;
+    transition-timing-function: linear;
+    transition-duration: 5s;
+}
+
+.text-left
+{
+    justify-content: flex-start !important;
+}
+
+#name-tag
+{
+    color: var(--neon-color);
+}
+
+#artist-tag
+{
+    color: white;
+}

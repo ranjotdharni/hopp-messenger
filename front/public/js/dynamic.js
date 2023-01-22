@@ -1,12 +1,42 @@
 var session;
-var resources = new Array(6);
+var curr = 0;
+var started = false;
+var resources = new Array(10);
 var searchHash = new Array(10);
 var Beacons = new Array(10);
 var Genres = new Array();
+var nameTick;
+var artistTick;
 
 window.onload = newSesh;
 document.getElementsByClassName('search-input')[0].onkeyup = searchArtists;
 document.getElementsByClassName('search-input')[0].onclick = searchArtists;
+document.getElementById('togglePlay').onclick = togglePlay;
+document.getElementById('prevTrack').onclick = async () =>
+{
+    if (curr == 0)
+    {
+        curr = 9;
+        await toTrack(curr);
+    }
+    else
+    {
+        await toTrack(--curr);
+    }
+}
+document.getElementById('nextTrack').onclick = async () =>
+{
+    if (curr == 9)
+    {
+        curr = 0;
+        await toTrack(curr);
+    }
+    else
+    {
+        await toTrack(++curr);
+    }
+}
+
 async function searchArtists()
 {
     let searchTerm = 'https://api.spotify.com/v1/search?q=' 
@@ -88,11 +118,12 @@ async function newSesh()
 
     if (sessionStorage.getItem('token'))
     {
-        console.log(sessionStorage.getItem('token'));
+        //window.onSpotifyWebPlaybackSDKReady = instatePlayer;
         document.getElementById('spotify-tag').classList.add('connected');
     }
     else
     {
+        //destroyPlayer();
         document.getElementById('spotify-tag').classList.remove('connected');
     }
 
@@ -109,55 +140,25 @@ async function freshHarvest()
 
     for (var i = 0; i < resources.length; i++)
     {
-        resources[i] = new Array(5);
+        resources[i] = new Array(4);
     }
 
-    let buffer = await fetch("https://api.spotify.com/v1/albums?ids=4lPh818nqtqiPwqOGEGA1b%2C2ODvWsOgouMbaA5xf0RkJe" 
-        + "%2C0MV1yCXcNNQBfwApqAVkH0%2C79dL7FLiJFOO0EoehUHQBv" 
-        + "%2C4vLYreWxd2ptOAzPwTyBI3%2C5Gm2XKBgnlzd6qTi7LE1z2&market=US", {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + session.session_key,
-        },
+    let buffer = await fetch("https://api.spotify.com/v1/recommendations?limit=10&market=US&seed_artists=6icQOAFXDZKsumw3YXyusw"
+            + "&seed_genres=hip-hop"
+            + "&seed_tracks=2p8IUWQDrpjuFltbdgLOag", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + session.session_key,
+            },
     });
 
     var final = await buffer.json();
-    var rawData = final.albums;
-
-    for (var k = 0; k < resources.length; k++)
-    {
-        for (var j = 0; j < resources[k].length; j++)
-        {
-            switch (j)
-            {
-                case 0:
-                    resources[k][j] =  rawData[k].images[0].url;
-                    break;
-                case 1:
-                    resources[k][j] =  rawData[k].name;
-                    break;
-                case 2:
-                    var middle = rawData[k].artists;
-                    var final = middle[0].name;
-                    for (var x = 1; x < middle.length; x++)
-                    {
-                        final = final + "; " + middle[x].name;
-                    }
-                    resources[k][j] = final;
-                    break;
-                case 3:
-                    resources[k][j] = rawData[k].release_date;
-                    break;
-                case 4:
-                    resources[k][j] = rawData[k].label;
-                    break;
-            }
-        }
-    }
+    hashResources(final.tracks);
 
     instateBeacons();
+    instateResources(curr);
 }
 
 function addBeacon(arg)
@@ -258,7 +259,7 @@ async function fireBeacons()
 
     if ((artists == 0) && (tracks == 0))
     {
-        errBeacon('Please add at least 1 beacon.');
+        errBeacon('Must add beacon(s).');
     }
     else if (artists == 0)
     {
@@ -270,6 +271,10 @@ async function fireBeacons()
     }
     else
     {
+        player.pause();
+        document.getElementById('playbtn').innerText = 'play_arrow';
+        started = false;
+
         let Aid = '';
         let Tid = '';
         let Gid = '';
@@ -324,12 +329,214 @@ async function fireBeacons()
         });
 
         var final = await buffer.json();
-        console.log(final);
+        hashResources(final.tracks);
     }
 }
 
 function connect()
 {
     location.href = 'https://accounts.spotify.com/authorize?response_type=code&client_id=646f686836bc44ec98f583414d84a261'
+                    + '&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-currently-playing%20user-read-playback-position%20user-read-email%20user-read-private%20user-read-playback-position%20user-top-read%20user-read-recently-played%20app-remote-control' 
                     + '&redirect_uri=' + window.location.origin + '/middle&state=9564821374953801';
+}
+
+function startMusic()
+{
+    fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
+        method: 'PUT',
+        body: JSON.stringify({
+            uris: uriGrab(),
+            position_ms: 0,
+        }),
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        },
+    });
+}
+
+function hashResources(rawData)
+{
+    curr = 0;
+
+    for (var k = 0; k < resources.length; k++)
+    {
+        for (var j = 0; j < resources[k].length; j++)
+        {
+            switch (j)
+            {
+                case 0:
+                    resources[k][j] =  rawData[k].album.images[0].url;
+                    break;
+                case 1:
+                    resources[k][j] =  rawData[k].name;
+                    break;
+                case 2:
+                    var middle = rawData[k].artists;
+                    var final = middle[0].name;
+                    for (var x = 1; x < middle.length; x++)
+                    {
+                        final = final + "; " + middle[x].name;
+                    }
+                    resources[k][j] = final;
+                    break;
+                case 3:
+                    resources[k][j] = rawData[k].uri;
+                    break;
+            }
+        }
+    }
+
+    instateResources(curr);
+}
+
+function uriGrab()
+{
+    var buffer = new Array(resources.length);
+
+    for (var i = 0; i < resources.length; i++)
+    {
+        buffer[i] = resources[i][3];
+    }
+
+    return buffer;
+}
+
+function instateResources(index)
+{
+    clearInterval(nameTick);
+    clearInterval(artistTick);
+    document.getElementById('name-tag').remove();
+    document.getElementById('artist-tag').remove();
+    var tr = document.createElement('p');
+    var ar = document.createElement('p');
+    tr.id = 'name-tag';
+    tr.classList.add('recc-tag');
+    ar.id = 'artist-tag';
+    ar.classList.add('recc-tag');
+    document.getElementById('name-wrap').appendChild(tr);
+    document.getElementById('artist-wrap').appendChild(ar);
+    document.getElementById('track-img').src = resources[index][0];
+    tr.innerText = resources[index][1];
+    ar.innerText = resources[index][2];
+    instateDynamicText();
+}
+
+function instateDynamicText()
+{
+    var wraps = document.getElementsByClassName('recc-wrap');
+    var tags = document.getElementsByClassName('recc-tag');
+
+    for (var i = 0; i < tags.length; i++)
+    {
+        switch (i)
+        {
+            case 0:
+                if (resources[curr][i + 1].length > 23)
+                {
+                    wraps[i].classList.add('text-left');
+                    nameTick = setInterval(moveText, 6000);
+                }
+                else
+                {
+                    wraps[i].classList.remove('text-left');
+                }
+                break;
+            case 1:
+                if (resources[curr][i + 1].length > 23)
+                {
+                    wraps[i].classList.add('text-left');
+                    artistTick = setInterval(moveText, 6000);
+                }
+                else
+                {
+                    wraps[i].classList.remove('text-left');
+                }
+                break;
+        }
+    }
+}
+
+function moveText()
+{
+    var text = document.getElementsByClassName('recc-tag');
+
+    for (var k = 0; k < text.length; k++)
+    {
+        if ((resources[curr][k + 1].length > 23) && (text[k].style.left != '0%'))
+        {
+            text[k].style.left = '0%';
+        }
+        else if ((resources[curr][k + 1].length > 23) && (text[k].style.left == '0%'))
+        {
+            text[k].style.left = '-' + (((resources[curr][k + 1].length / 23) - 1) * 100) + '%';
+        }
+    }
+}
+
+function togglePlayBtn()
+{
+    if (document.getElementById('playbtn').innerText == 'pause')
+    {
+        document.getElementById('playbtn').innerText = 'play_arrow';
+    }
+    else
+    {
+        document.getElementById('playbtn').innerText = 'pause';
+    }
+}
+
+async function togglePlay()
+{
+    if (!started)
+    {
+        started = true;
+        fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
+            method: 'PUT',
+            body: JSON.stringify({
+                uris: [resources[curr][3]],
+                position_ms: 0,
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            },
+        });
+        
+        document.getElementById('playbtn').innerText = 'pause';
+    }
+    else
+    {
+        player.togglePlay();
+        togglePlayBtn();
+    }
+}
+
+async function toTrack(arg)
+{
+    if (started)
+    {
+        fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
+            method: 'PUT',
+            body: JSON.stringify({
+                uris: [resources[arg][3]],
+                position_ms: 0,
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            },
+        });
+
+        instateResources(arg);
+        document.getElementById('playbtn').innerText = 'pause';
+    }
+    else
+    {
+        instateResources(arg);
+        document.getElementById('playbtn').innerText = 'play_arrow';
+    }
 }
