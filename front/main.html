@@ -93,7 +93,7 @@
             <div id = "name-wrap" class = "recc-wrap"><p id = "name-tag" class = "recc-tag"></p></div>
             <div id = "artist-wrap" class = "recc-wrap"><p id = "artist-tag" class = "recc-tag"></p></div>
             <button id = "togglePlay" class = "recc-btn-span"><span id = "playbtn" class="material-symbols-outlined">play_arrow</span></button>
-            <button id = "prevTrack" class = "recc-btn-span"><span class="material-symbols-outlined">skip_previous</span></button>
+            <button id = "prevTrack" class = "recc-btn-span"><span id = "prevbtn" class="material-symbols-outlined">skip_previous</span></button>
             <button id = "nextTrack" class = "recc-btn-span"><span class="material-symbols-outlined">skip_next</span></button>
             <button id = "recc-conn" class = "btn-style" onclick="connect()"><span class="material-symbols-outlined">chevron_right</span></button>
         </div>
@@ -111,7 +111,6 @@
                 getOAuthToken: cb => { cb(token); },
                 volume: 0.5
             });
-
             // Ready
             player.addListener('ready', ({ device_id }) => {
                 device = device_id;
@@ -122,6 +121,27 @@
             player.addListener('not_ready', ({ device_id }) => {
                 console.log('Device ID has gone offline', device_id);
             });
+
+            player.addListener('player_state_changed', async ({
+                position,
+                duration,
+                track_window: { current_track }
+                }) => {
+                        if (!started)
+                        {
+                            await player.pause();
+                        }
+
+                        var buffer = await player.getCurrentState();
+                        if (buffer.paused)
+                        {
+                            document.getElementById('playbtn').innerText = 'play_arrow';
+                        }
+                        else
+                        {
+                            document.getElementById('playbtn').innerText = 'pause';
+                        }
+                    });
 
             player.addListener('initialization_error', ({ message }) => {
                 console.error(message);

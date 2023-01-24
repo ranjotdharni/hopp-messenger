@@ -522,6 +522,13 @@ body
         0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
 }
 
+.dimmed
+{
+    cursor: default !important;
+    text-shadow: none !important;
+    color: #302f2f !important;
+}
+
 #prevTrack
 {
     position: absolute;

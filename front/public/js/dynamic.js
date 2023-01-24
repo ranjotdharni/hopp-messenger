@@ -1,5 +1,4 @@
 var session;
-var curr = 0;
 var started = false;
 var resources = new Array(10);
 var searchHash = new Array(10);
@@ -11,30 +10,14 @@ var artistTick;
 window.onload = newSesh;
 document.getElementsByClassName('search-input')[0].onkeyup = searchArtists;
 document.getElementsByClassName('search-input')[0].onclick = searchArtists;
-document.getElementById('togglePlay').onclick = togglePlay;
+document.getElementById('togglePlay').onclick = toggle;
 document.getElementById('prevTrack').onclick = async () =>
 {
-    if (curr == 0)
-    {
-        curr = 9;
-        await toTrack(curr);
-    }
-    else
-    {
-        await toTrack(--curr);
-    }
+    await prev();
 }
 document.getElementById('nextTrack').onclick = async () =>
 {
-    if (curr == 9)
-    {
-        curr = 0;
-        await toTrack(curr);
-    }
-    else
-    {
-        await toTrack(++curr);
-    }
+    await next();
 }
 
 async function searchArtists()
@@ -127,7 +110,10 @@ async function newSesh()
         document.getElementById('spotify-tag').classList.remove('connected');
     }
 
-    await freshHarvest();
+    setTimeout(async function()
+    {
+        await freshHarvest();
+    }, 1000);
 }
 
 async function freshHarvest()
@@ -158,7 +144,8 @@ async function freshHarvest()
     hashResources(final.tracks);
 
     instateBeacons();
-    instateResources(curr);
+    instateResources(0);
+    await instateMusic();
 }
 
 function addBeacon(arg)
@@ -272,7 +259,7 @@ async function fireBeacons()
     else
     {
         player.pause();
-        document.getElementById('playbtn').innerText = 'play_arrow';
+        //document.getElementById('playbtn').innerText = 'play_arrow';
         started = false;
 
         let Aid = '';
@@ -330,6 +317,8 @@ async function fireBeacons()
 
         var final = await buffer.json();
         hashResources(final.tracks);
+        await instateMusic();
+        await player.togglePlay();
     }
 }
 
@@ -340,12 +329,21 @@ function connect()
                     + '&redirect_uri=' + window.location.origin + '/middle&state=9564821374953801';
 }
 
-function startMusic()
+async function instateMusic()
 {
-    fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
+    await fetch('https://api.spotify.com/v1/me/player/repeat?state=context&device_id=' + device, {
+        method: 'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+        },
+    });
+
+    await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
         method: 'PUT',
         body: JSON.stringify({
-            uris: uriGrab(),
+            uris: uriGrab(1),
             position_ms: 0,
         }),
         headers: {
@@ -358,8 +356,6 @@ function startMusic()
 
 function hashResources(rawData)
 {
-    curr = 0;
-
     for (var k = 0; k < resources.length; k++)
     {
         for (var j = 0; j < resources[k].length; j++)
@@ -388,16 +384,27 @@ function hashResources(rawData)
         }
     }
 
-    instateResources(curr);
+    instateResources(0);
 }
 
-function uriGrab()
+function uriGrab(arg)
 {
-    var buffer = new Array(resources.length);
-
-    for (var i = 0; i < resources.length; i++)
+    if (arg < 1)
     {
-        buffer[i] = resources[i][3];
+        arg = 1;
+    }
+
+    var buffer = new Array(arg * resources.length);
+    var itr = 0;
+
+    for (var i = 0; itr < (arg * resources.length); itr++)
+    {
+        buffer[itr] = resources[i][3];
+        i++;
+        if (i > 9)
+        {
+            i = 0;
+        }
     }
 
     return buffer;
@@ -406,7 +413,6 @@ function uriGrab()
 function instateResources(index)
 {
     clearInterval(nameTick);
-    clearInterval(artistTick);
     document.getElementById('name-tag').remove();
     document.getElementById('artist-tag').remove();
     var tr = document.createElement('p');
@@ -427,16 +433,16 @@ function instateDynamicText()
 {
     var wraps = document.getElementsByClassName('recc-wrap');
     var tags = document.getElementsByClassName('recc-tag');
+    nameTick = setInterval(moveText, 6000);
 
     for (var i = 0; i < tags.length; i++)
     {
         switch (i)
         {
             case 0:
-                if (resources[curr][i + 1].length > 23)
+                if (tags[i].innerText.length > 23)
                 {
                     wraps[i].classList.add('text-left');
-                    nameTick = setInterval(moveText, 6000);
                 }
                 else
                 {
@@ -444,10 +450,9 @@ function instateDynamicText()
                 }
                 break;
             case 1:
-                if (resources[curr][i + 1].length > 23)
+                if (tags[i].innerText.length > 23)
                 {
                     wraps[i].classList.add('text-left');
-                    artistTick = setInterval(moveText, 6000);
                 }
                 else
                 {
@@ -464,79 +469,63 @@ function moveText()
 
     for (var k = 0; k < text.length; k++)
     {
-        if ((resources[curr][k + 1].length > 23) && (text[k].style.left != '0%'))
+        if ((text[k].innerText.length > 23) && (text[k].style.left != '0%'))
         {
             text[k].style.left = '0%';
         }
-        else if ((resources[curr][k + 1].length > 23) && (text[k].style.left == '0%'))
+        else if ((text[k].innerText.length > 23) && (text[k].style.left == '0%'))
         {
-            text[k].style.left = '-' + (((resources[curr][k + 1].length / 23) - 1) * 100) + '%';
+            text[k].style.left = '-' + (((text[k].innerText.length / 23) - 1) * 100) + '%';
         }
     }
 }
 
-function togglePlayBtn()
-{
-    if (document.getElementById('playbtn').innerText == 'pause')
-    {
-        document.getElementById('playbtn').innerText = 'play_arrow';
-    }
-    else
-    {
-        document.getElementById('playbtn').innerText = 'pause';
-    }
-}
-
-async function togglePlay()
+async function toggle()
 {
     if (!started)
     {
         started = true;
-        fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
-            method: 'PUT',
-            body: JSON.stringify({
-                uris: [resources[curr][3]],
-                position_ms: 0,
-            }),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-            },
-        });
-        
-        document.getElementById('playbtn').innerText = 'pause';
+    }
+    
+    await player.togglePlay();
+}
+
+async function next()
+{
+    if (!started)
+    {
+        started = true;
+    }
+
+    var buffer = await player.getCurrentState();
+    var inc = buffer.track_window.next_tracks;
+    if (inc.length == 0)
+    {
+        started = false;
+        instateResources(0);
     }
     else
     {
-        player.togglePlay();
-        togglePlayBtn();
+        instateResources(uriGrab(1).indexOf(inc[0].uri));
     }
+    await player.nextTrack();
 }
 
-async function toTrack(arg)
+async function prev()
 {
     if (started)
     {
-        fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
-            method: 'PUT',
-            body: JSON.stringify({
-                uris: [resources[arg][3]],
-                position_ms: 0,
-            }),
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-            },
-        });
+        var buffer = await player.getCurrentState();
+        var inc = buffer.track_window.previous_tracks;
+        if (inc.length == 0)
+        {
+            instateResources(0);
+        }
+        else
+        {
+            instateResources(uriGrab(1).indexOf(inc[inc.length - 1].uri));
+        }
 
-        instateResources(arg);
-        document.getElementById('playbtn').innerText = 'pause';
-    }
-    else
-    {
-        instateResources(arg);
-        document.getElementById('playbtn').innerText = 'play_arrow';
+        await player.previousTrack();
     }
 }
