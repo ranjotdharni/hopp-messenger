@@ -5,7 +5,6 @@ var searchHash = new Array(10);
 var Beacons = new Array(10);
 var Genres = new Array();
 var nameTick;
-var artistTick;
 
 window.onload = newSesh;
 document.getElementsByClassName('search-input')[0].onkeyup = searchArtists;
@@ -101,12 +100,10 @@ async function newSesh()
 
     if (sessionStorage.getItem('token'))
     {
-        //window.onSpotifyWebPlaybackSDKReady = instatePlayer;
         document.getElementById('spotify-tag').classList.add('connected');
     }
     else
     {
-        //destroyPlayer();
         document.getElementById('spotify-tag').classList.remove('connected');
     }
 
@@ -259,7 +256,6 @@ async function fireBeacons()
     else
     {
         player.pause();
-        //document.getElementById('playbtn').innerText = 'play_arrow';
         started = false;
 
         let Aid = '';
@@ -486,7 +482,6 @@ async function toggle()
     {
         started = true;
     }
-    
     await player.togglePlay();
 }
 
@@ -496,18 +491,6 @@ async function next()
     {
         started = true;
     }
-
-    var buffer = await player.getCurrentState();
-    var inc = buffer.track_window.next_tracks;
-    if (inc.length == 0)
-    {
-        started = false;
-        instateResources(0);
-    }
-    else
-    {
-        instateResources(uriGrab(1).indexOf(inc[0].uri));
-    }
     await player.nextTrack();
 }
 
@@ -515,17 +498,6 @@ async function prev()
 {
     if (started)
     {
-        var buffer = await player.getCurrentState();
-        var inc = buffer.track_window.previous_tracks;
-        if (inc.length == 0)
-        {
-            instateResources(0);
-        }
-        else
-        {
-            instateResources(uriGrab(1).indexOf(inc[inc.length - 1].uri));
-        }
-
         await player.previousTrack();
     }
 }

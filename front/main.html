@@ -133,6 +133,12 @@
                         }
 
                         var buffer = await player.getCurrentState();
+                        if (buffer.track_window.current_track)
+                        {
+                            instateResources(uriGrab(1).indexOf(buffer.track_window.current_track.uri));
+                        }
+
+
                         if (buffer.paused)
                         {
                             document.getElementById('playbtn').innerText = 'play_arrow';
