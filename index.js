@@ -1,3 +1,7 @@
+const client_secret = process.env.client_secret || 'NjQ2ZjY4NjgzNmJjNDRlYzk4ZjU4MzQxNGQ4NGEyNjE6NjQ4MjU3MGNmZTViNDYxNTgzOWM4MzJlNTEwMDFlOTY=';
+var genesis;
+var instance;
+
 const fetch = require('node-fetch');
 const mysql = require('mysql2');
 const express = require('express');
@@ -6,6 +10,8 @@ const cookieParser = require('cookie-parser');
 const uuid = require('uuid');
 const router = require(__dirname + '/front/router/pages.js');
 const app = express();
+const server = app.listen(process.env.PORT || 8080, onLaunch());
+const io = require('socket.io')(server);
 
 app.use(express.urlencoded({extended: true}));  //Place the attributes that interpret data first
 app.use(express.json());
@@ -13,10 +19,6 @@ app.use(cookieParser());
 app.use(express.static(__dirname + '/front/public'));
 app.use('/home', guard) //Ex: must come after cookie-parser b/cause this method uses cookie-parser
 app.use('/', router);
-
-const client_secret = process.env.client_secret || 'NjQ2ZjY4NjgzNmJjNDRlYzk4ZjU4MzQxNGQ4NGEyNjE6NjQ4MjU3MGNmZTViNDYxNTgzOWM4MzJlNTEwMDFlOTY=';
-var genesis;
-var instance;
 
 const pool = mysql.createPool(
     {
@@ -165,11 +167,11 @@ async function onLaunch(error)
 
     if (error)
     {
-        console.log('Error: ', error);
+        console.log('Start-up Error: ', error);
     }
     else
     {
-        console.log('Server live; PORT ' + (process.env.PORT || 8080));
+        console.log('Server live on {PORT: "' + (process.env.PORT || 8080) + '"}');
     }
 }
 
@@ -246,5 +248,9 @@ async function authSession(token)
     return result;
 }
 
-
-app.listen(process.env.PORT || 8080, onLaunch());   //Ensure listen call is at the end of server
+io.on('connection', socket => {
+    console.log(socket.id + ' has connected...');
+    socket.on('disconnect', () => {
+        console.log(socket.id + ' has disconnected from server...');
+    });
+});

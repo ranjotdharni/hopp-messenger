@@ -14,7 +14,14 @@
     <div id = "dynamic-bg-container"></div>
 
     <div id = "dashboard-container">
-        <div id = "dash-hud" class = "panel"></div>
+        <div id = "dash-hud" class = "panel">
+            <div class = "headerbox">Message HUD</div>
+            <div id = "msg-display"></div>
+            <input placeholder = "Type something..." id = "msg-input">
+            <label id = "send-label">Send</label>
+            <button id = "msg-send" class = "btn-style"><span class="material-symbols-outlined">chevron_right</span></button>
+        </div>
+
         <div id = "dash-control" class = "panel">
             <label id = "artist-label" class = "control-label">Search Artist(s):</label>
             <label id = "track-label" class = "control-label">Search Track(s):</label>
@@ -100,6 +107,7 @@
         <div id = "dash-tethers" class = "panel"></div>
     </div>
 
+    <script src="/socket.io/socket.io.js"></script>
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script>
         var player;
@@ -164,6 +172,7 @@
             player.connect();
         }
     </script>
+    <script src = "/js/sock.js"></script>
     <script src = "/js/dynamic.js"></script>
 </body>
 </html>

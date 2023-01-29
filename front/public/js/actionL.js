@@ -68,7 +68,7 @@ async function freshHarvest()
                     var final = middle[0].name;
                     for (var x = 1; x < middle.length; x++)
                     {
-                        final = final + "; " + middle[x].name;
+                        final = final + " - " + middle[x].name;
                     }
                     resources[k][j] = final;
                     break;

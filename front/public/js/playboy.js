@@ -191,5 +191,4 @@ async function getResource()
     });
 
     var final = await buffer.json();
-    document.getElementById('filter').src = 'https://burst.shopifycdn.com/photos/moody-green-vine-wall-texture.jpg?width=925&format=pjpg&exif=1&iptc=1';/*final.images[0].url;*/
 }

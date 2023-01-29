@@ -369,7 +369,7 @@ function hashResources(rawData)
                     var final = middle[0].name;
                     for (var x = 1; x < middle.length; x++)
                     {
-                        final = final + "; " + middle[x].name;
+                        final = final + " - " + middle[x].name;
                     }
                     resources[k][j] = final;
                     break;
@@ -500,4 +500,28 @@ async function prev()
     {
         await player.previousTrack();
     }
+}
+
+function newMessage(arg, incoming)
+{
+    let messageBox = document.createElement('div');
+    let message = document.createElement('p');
+
+    messageBox.classList.add('msg-box');
+    message.classList.add('msg');
+
+    if (incoming)
+    {
+        messageBox.classList.add('incoming-box');
+        message.classList.add('incoming-msg');
+    }
+    else
+    {
+        messageBox.classList.add('outgoing-box');
+        message.classList.add('outgoing-msg');
+    }
+
+    message.innerText = arg;
+    messageBox.appendChild(message);
+    document.getElementById('msg-display').appendChild(messageBox);
 }
