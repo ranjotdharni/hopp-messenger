@@ -5,6 +5,7 @@ var searchHash = new Array(10);
 var Beacons = new Array(10);
 var Genres = new Array();
 var nameTick;
+let user = null;
 
 window.onload = newSesh;
 document.getElementsByClassName('search-input')[0].onkeyup = searchArtists;
@@ -17,6 +18,54 @@ document.getElementById('prevTrack').onclick = async () =>
 document.getElementById('nextTrack').onclick = async () =>
 {
     await next();
+}
+document.getElementById('room-search-input').onkeyup = () => 
+{
+    if (document.getElementById('room-search-input').value.trim() != '')
+    {
+        document.getElementById('join-btn-label').classList.remove('dimmed');
+        document.getElementById('join-btn-txt').classList.remove('dimmed');
+    }
+    else
+    {
+        document.getElementById('join-btn-label').classList.remove('dimmed');
+        document.getElementById('join-btn-txt').classList.remove('dimmed');
+        document.getElementById('join-btn-label').classList.add('dimmed');
+        document.getElementById('join-btn-txt').classList.add('dimmed');
+    }
+}
+document.getElementById('join-btn').onclick = async () =>
+{
+    var entry = document.getElementById('room-search-input').value.trim();
+    document.getElementById('room-search-input').value = '';
+    document.getElementById('join-btn-label').classList.remove('dimmed');
+    document.getElementById('join-btn-txt').classList.remove('dimmed');
+    document.getElementById('join-btn-label').classList.add('dimmed');
+    document.getElementById('join-btn-txt').classList.add('dimmed');
+    if (entry == '')
+    {
+        return;
+    }
+
+    joinError('ID not found');
+    setTimeout(function() {
+        document.getElementsByClassName('join-res')[0].remove();
+    }, 7000);
+}
+
+async function getUser()
+{
+    var buffer = await fetch(window.location.origin + '/user');
+    var final = await buffer.json();
+    
+    if (final.error)
+    {
+        console.log(final.error);
+    }
+    else
+    {
+        user = final.username;
+    }
 }
 
 async function searchArtists()
@@ -95,6 +144,7 @@ async function searchTracks()
 
 async function newSesh()
 {
+    await getUser();
     var middle = await fetch(window.location.origin + '/portal');
     session = await middle.json();
 
@@ -524,4 +574,13 @@ function newMessage(arg, incoming)
     message.innerText = arg;
     messageBox.appendChild(message);
     document.getElementById('msg-display').appendChild(messageBox);
+}
+
+function joinError(message)
+{
+    var err = document.createElement('p');
+    err.classList.add('join-res');
+    err.innerText = message;
+    document.getElementById('dash-tethers').appendChild(err);
+    return err;
 }

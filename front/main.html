@@ -15,7 +15,7 @@
 
     <div id = "dashboard-container">
         <div id = "dash-hud" class = "panel">
-            <div class = "headerbox">Message HUD</div>
+            <div id = "msg-header" class = "headerbox">Message HUD</div>
             <div id = "msg-display"></div>
             <input placeholder = "Type something..." id = "msg-input">
             <label id = "send-label">Send</label>
@@ -59,7 +59,7 @@
                 </ul>
             </div>
             <div id = "genre-select" class = "drop-select">
-                <label tabindex="0">Genre List</label>
+                <label tabindex="0">Genre List<span class="material-symbols-outlined centered">expand_more</span></label>
                 <ul id = "genre-dropbox">
                     <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'pop')">Pop</p></div>
                     <div class = "result-box"><p tabindex="0" class = "genre-result" onclick = "cycle(this, 'rock')">Rock</p></div>
@@ -74,7 +74,7 @@
                 </ul>
             </div>
             <div id = "beacon-select" class = "drop-select">
-                <label tabindex="0">Beacon List</label>
+                <label tabindex="0">Beacon List<span class="material-symbols-outlined centered">expand_more</span></label>
                 <ul id = "beacon-dropbox">
                     <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(0)"><span class="material-symbols-outlined">delete</span></button></div>
                     <div class = "result-box"><p class = "beacon-result"></p><button class = "result-box-button beacon-btn" onclick="dropBeacon(1)"><span class="material-symbols-outlined">delete</span></button></div>
@@ -104,7 +104,23 @@
             <button id = "nextTrack" class = "recc-btn-span"><span class="material-symbols-outlined">skip_next</span></button>
             <button id = "recc-conn" class = "btn-style" onclick="connect()"><span class="material-symbols-outlined">chevron_right</span></button>
         </div>
-        <div id = "dash-tethers" class = "panel"></div>
+        <div id = "dash-tethers" class = "panel">
+            <div id = "cp-header" class = "headerbox">Control Panel</div>
+            <label id = "room-input-label">Find Rooms:</label>
+            <input placeholder = "Enter Room ID..." id = "room-search-input">
+            <label id = "room-create-label">New Room:</label>
+            <input placeholder = "Enter Nickname (optional)" id = "room-input">
+            <label id = "create-btn-label">Create Room</label>
+            <button id = "create-btn" class = "btn-style"><span class="material-symbols-outlined">home</span></button>
+            <label id = "join-btn-label" class = "dimmed">Join Room</label>
+            <button id = "join-btn" class = "btn-style"><span class="material-symbols-outlined dimmed" id = "join-btn-txt">group_add</span></button>
+
+            <div id = "room-select" class = "drop-select">
+                <label tabindex="0">Rooms<span class="material-symbols-outlined centered">expand_more</span></label>
+                <ul id = "rooms-dropbox">
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>

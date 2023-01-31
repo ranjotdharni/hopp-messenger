@@ -134,6 +134,38 @@ app.post('/portal', async function(req, res)
     }
 });
 
+app.get('/user', async function(req, res)
+{
+    if (!req.cookies)
+    {   
+        res.send(JSON.parse('{"status":400, "error":"Bad Request"}')).end();
+        return
+    }
+
+    const sessionToken = req.cookies['session_token'];
+    if (!sessionToken)
+    {
+        res.send(JSON.parse('{"status":400, "error":"Bad Request"}')).end();
+        return
+    }
+
+    const result = await pool.query
+    (
+        'SELECT user FROM sessions WHERE token = ?',
+        [sessionToken]
+    );
+
+    if (result[0].length == 0)
+    {
+        res.send(JSON.parse('{"status":401, "error":"session not found"}')).end();
+    }
+    else
+    {
+        //console.log(uuid.v4().slice(24));
+        res.send(JSON.parse('{"status":200, "username":"' + result[0][0].user + '"}')).end();
+    }
+});
+
 app.get('/request', async function(req, res)
 {
     var code = req.query.code;
