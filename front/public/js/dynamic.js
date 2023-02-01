@@ -4,13 +4,26 @@ var resources = new Array(10);
 var searchHash = new Array(10);
 var Beacons = new Array(10);
 var Genres = new Array();
+var Rooms = new Array();
 var nameTick;
+var roomView = -1;
 let user = null;
 
-window.onload = newSesh;
+window.onload = async function()
+{
+    await newSesh();
+};
 document.getElementsByClassName('search-input')[0].onkeyup = searchArtists;
 document.getElementsByClassName('search-input')[0].onclick = searchArtists;
 document.getElementById('togglePlay').onclick = toggle;
+document.getElementById('create-btn').onclick = newRoom;
+document.getElementById('roomslabel').onclick = () =>
+{
+    if (document.getElementById('room-notif'))
+    {
+        document.getElementById('room-notif').remove();
+    }
+}
 document.getElementById('prevTrack').onclick = async () =>
 {
     await prev();
@@ -48,9 +61,6 @@ document.getElementById('join-btn').onclick = async () =>
     }
 
     joinError('ID not found');
-    setTimeout(function() {
-        document.getElementsByClassName('join-res')[0].remove();
-    }, 7000);
 }
 
 async function getUser()
@@ -552,7 +562,7 @@ async function prev()
     }
 }
 
-function newMessage(arg, incoming)
+function newMessage(arg, incoming, targ)
 {
     let messageBox = document.createElement('div');
     let message = document.createElement('p');
@@ -573,7 +583,7 @@ function newMessage(arg, incoming)
 
     message.innerText = arg;
     messageBox.appendChild(message);
-    document.getElementById('msg-display').appendChild(messageBox);
+    document.getElementsByClassName('msg-display')[targ + 1].appendChild(messageBox);
 }
 
 function joinError(message)
@@ -582,5 +592,113 @@ function joinError(message)
     err.classList.add('join-res');
     err.innerText = message;
     document.getElementById('dash-tethers').appendChild(err);
+    setTimeout(function() {
+        document.getElementsByClassName('join-res')[0].remove();
+    }, 7000);
     return err;
+}
+
+function newJoinNotif()
+{
+    var notif = document.getElementById('room-notif');
+
+    if (!notif)
+    {
+        document.getElementById('roomslabel').innerHTML = 'Rooms<div id = "room-notif">1</div><span class="material-symbols-outlined centered">expand_more</span>';
+    }
+    else if (notif.innerText == '!')
+    {
+        return;
+    }
+    else if (eval(notif.innerText) > 8)
+    {
+        notif.innerText = '!';
+    }
+    else
+    {
+        notif.innerText = eval(notif.innerText + ' + 1');
+    }
+}
+
+function instateRoom(tar)
+{
+    var allTitles = document.getElementsByClassName('room-box-title');
+    var allDisplays = document.getElementsByClassName('msg-display');
+    var x = Rooms.map(object => object.name).indexOf(tar.innerText);
+    roomView = x;
+
+    for (var i = 0; i < allTitles.length; i++)
+    {
+        allTitles[i].classList.remove('highlight');
+    }
+
+    for (var k = 1; k < allDisplays.length; k++)
+    {
+        allDisplays[k].classList.remove('front');
+    }
+
+    allDisplays[x + 1].classList.add('front');
+    tar.classList.add('highlight');
+}
+
+function addRoomBox(arg)
+{
+    var inQuestion = document.createElement('div');
+
+    inQuestion.classList.add('result-box');
+    inQuestion.innerHTML = '<p class = "room-box-title" onclick="instateRoom(this)">'+ arg +'</p>';
+
+    document.getElementById('rooms-dropbox').appendChild(inQuestion);
+}
+
+function addRoom(name, host, room)
+{
+    Rooms.push({name: name, host: host, room: room});
+    roomView = Rooms.length - 1;
+
+    var fresh = document.createElement('div');
+    fresh.classList.add('msg-display');
+    fresh.classList.add('front');
+    document.getElementById('dash-hud').appendChild(fresh);
+
+    addRoomBox(name);
+    instateRoom(document.getElementsByClassName('room-box-title')[roomView]);
+}
+
+async function newRoom()
+{
+    var roomName = document.getElementById('room-input').value.trim();
+    document.getElementById('room-input').value = '';
+    
+    if (roomName != '')
+    {
+        for (var i = 0; i < Rooms.length; i++)
+        {
+            if (Rooms[i].name == roomName)
+            {
+                joinError('Room names must be unique');
+                return;
+            }
+        }
+    }
+
+    let response = await fetch(window.location.origin + '/room',
+            { 
+                method: 'PUT',
+                body: JSON.stringify(
+                    {
+                        socket: socket.id,
+                        name: roomName,
+                        user: user
+                    }),
+                headers:
+                {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            });
+    var final = await response.json();
+    roomName = final.room_name;
+
+    addRoom(roomName, final.host, final.room_id);
+    newJoinNotif();
 }

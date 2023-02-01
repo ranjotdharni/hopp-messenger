@@ -17,7 +17,10 @@ app.use(express.urlencoded({extended: true}));  //Place the attributes that inte
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(__dirname + '/front/public'));
-app.use('/home', guard) //Ex: must come after cookie-parser b/cause this method uses cookie-parser
+app.use('/home', guard); //Ex: must come after cookie-parser b/cause this method uses cookie-parser
+app.use('/request', guard);
+app.use('/user', guard);
+app.use('/room', guard);
 app.use('/', router);
 
 const pool = mysql.createPool(
@@ -161,7 +164,6 @@ app.get('/user', async function(req, res)
     }
     else
     {
-        //console.log(uuid.v4().slice(24));
         res.send(JSON.parse('{"status":200, "username":"' + result[0][0].user + '"}')).end();
     }
 });
@@ -271,7 +273,7 @@ async function createSesh(token, user, expiry)
 
 async function authSession(token)
 {
-    result = await pool.query
+    var result = await pool.query
     (
         'SELECT expires_at FROM sessions WHERE token = ?',
         [token]
@@ -280,9 +282,47 @@ async function authSession(token)
     return result;
 }
 
+async function makeRoom(host, id, name)
+{
+    await pool.query
+    (
+        'INSERT INTO rooms (host, room_id, name) VALUES (?, ?, ?)',
+        [host, id, name]
+    );
+}
+
+async function removeRooms(host)
+{
+    await pool.query
+    (
+        'DELETE FROM rooms WHERE host = ?',
+        [host]
+    );
+}
+
+app.put('/room', async function(req, res)
+{
+    var newHost = req.body.socket;
+    var roomName;
+    var newRoomID = uuid.v4().slice(24);
+
+    if (!req.body.name)
+    {
+        roomName = req.body.user + newRoomID;
+    }
+    else
+    {
+        roomName = req.body.name;
+    }
+
+    await makeRoom(newHost, newRoomID, roomName);
+    res.send(JSON.parse('{"message":"New Room -> Host: ' + newHost + ' Room ID: ' + newRoomID + '", "room_id":"' + newRoomID + '", "host":"' + newHost + '", "room_name":"' + roomName + '"}')).end();
+});
+
 io.on('connection', socket => {
     console.log(socket.id + ' has connected...');
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
+        await removeRooms(socket.id);
         console.log(socket.id + ' has disconnected from server...');
     });
 });

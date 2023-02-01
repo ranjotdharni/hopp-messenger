@@ -16,7 +16,7 @@
     <div id = "dashboard-container">
         <div id = "dash-hud" class = "panel">
             <div id = "msg-header" class = "headerbox">Message HUD</div>
-            <div id = "msg-display"></div>
+            <div class = "msg-display">No Rooms :(</div>
             <input placeholder = "Type something..." id = "msg-input">
             <label id = "send-label">Send</label>
             <button id = "msg-send" class = "btn-style"><span class="material-symbols-outlined">chevron_right</span></button>
@@ -116,7 +116,7 @@
             <button id = "join-btn" class = "btn-style"><span class="material-symbols-outlined dimmed" id = "join-btn-txt">group_add</span></button>
 
             <div id = "room-select" class = "drop-select">
-                <label tabindex="0">Rooms<span class="material-symbols-outlined centered">expand_more</span></label>
+                <label id = "roomslabel" tabindex="0">Rooms<span class="material-symbols-outlined centered">expand_more</span></label>
                 <ul id = "rooms-dropbox">
                 </ul>
             </div>
