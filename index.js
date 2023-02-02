@@ -300,6 +300,31 @@ async function removeRooms(host)
     );
 }
 
+async function getRoom(id)
+{
+    return await pool.query
+    (
+        'SELECT * FROM rooms WHERE room_id = ?',
+        [id]
+    );
+}
+
+app.post('/room', async function(req, res)
+{
+    var id = req.body.socket;
+    var room = await getRoom(id);
+
+    if (room[0].length != 0)
+    {
+        let result = room[0][0];
+        res.send(JSON.parse('{"host":"' + result.host + '", "room_id":"' + result.room_id + '", "name":"' + result.name + '"}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"error":"Room not found"}')).end();
+    }
+});
+
 app.put('/room', async function(req, res)
 {
     var newHost = req.body.socket;
@@ -316,11 +341,21 @@ app.put('/room', async function(req, res)
     }
 
     await makeRoom(newHost, newRoomID, roomName);
+    console.log('Room created with ID ' + newRoomID);
     res.send(JSON.parse('{"message":"New Room -> Host: ' + newHost + ' Room ID: ' + newRoomID + '", "room_id":"' + newRoomID + '", "host":"' + newHost + '", "room_name":"' + roomName + '"}')).end();
 });
 
 io.on('connection', socket => {
     console.log(socket.id + ' has connected...');
+
+    socket.on('join-room', room => {
+        socket.join(room);
+    });
+
+    socket.on('new-message', (message, room) => {
+        socket.broadcast.to(room).emit('receive-message', message, room);
+    });
+
     socket.on('disconnect', async () => {
         await removeRooms(socket.id);
         console.log(socket.id + ' has disconnected from server...');

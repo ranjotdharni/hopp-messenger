@@ -8,7 +8,7 @@ document.getElementById('msg-send').onclick = () =>
     if ((msg.length != 0) && (roomView > -1))
     {
         newMessage(msg, false, roomView);
-        newMessage('This is an automated reply; please do not respond.', true, roomView);
+        socket.emit('new-message', msg, Rooms[roomView].room);
     }
     else
     {
@@ -18,4 +18,14 @@ document.getElementById('msg-send').onclick = () =>
 
 socket.on('connect', () => {
     console.log(socket.id + ' is live...');
+});
+
+socket.on('receive-message', (message, room) => {
+    var tar = Rooms.map(object => object.room).indexOf(room);
+    newMessage(message, true, tar);
+
+    if (tar != roomView)
+    {
+        newJoinNotif();
+    }
 });

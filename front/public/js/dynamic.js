@@ -60,7 +60,29 @@ document.getElementById('join-btn').onclick = async () =>
         return;
     }
 
-    joinError('ID not found');
+    var buffer = await fetch(window.location.origin + '/room',
+    {
+        method: 'POST',
+        body: JSON.stringify(
+            {
+                socket: entry,
+            }),
+        headers:
+        {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    });
+    var final = await buffer.json();
+
+    if (final.error)
+    {
+        joinError(final.error);
+    }
+    else
+    {
+        socket.emit('join-room', final.room_id);
+        addRoom(final.name, final.host, final.room_id);
+    }
 }
 
 async function getUser()
@@ -663,6 +685,7 @@ function addRoom(name, host, room)
 
     addRoomBox(name);
     instateRoom(document.getElementsByClassName('room-box-title')[roomView]);
+    newJoinNotif();
 }
 
 async function newRoom()
@@ -676,7 +699,7 @@ async function newRoom()
         {
             if (Rooms[i].name == roomName)
             {
-                joinError('Room names must be unique');
+                joinError('Nicknames must be locally unique');
                 return;
             }
         }
@@ -699,6 +722,6 @@ async function newRoom()
     var final = await response.json();
     roomName = final.room_name;
 
+    socket.emit('join-room', final.room_id);
     addRoom(roomName, final.host, final.room_id);
-    newJoinNotif();
 }
