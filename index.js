@@ -1,4 +1,3 @@
-const client_secret = process.env.client_secret || 'NjQ2ZjY4NjgzNmJjNDRlYzk4ZjU4MzQxNGQ4NGEyNjE6NjQ4MjU3MGNmZTViNDYxNTgzOWM4MzJlNTEwMDFlOTY=';
 var genesis;
 var instance;
 
@@ -10,6 +9,8 @@ const cookieParser = require('cookie-parser');
 const uuid = require('uuid');
 const router = require(__dirname + '/front/router/pages.js');
 const app = express();
+require('dotenv').config();
+const client_secret = process.env.client_secret;
 const server = app.listen(process.env.PORT || 8080, onLaunch());
 const io = require('socket.io')(server);
 
@@ -25,10 +26,10 @@ app.use('/', router);
 
 const pool = mysql.createPool(
     {
-        host: process.env.DB_HOST || 'us-east.connect.psdb.cloud',
-        user: process.env.DB_USER || 'y4roquoe2td3t11z1gl0',
-        password: process.env.DB_PASS || 'pscale_pw_S5qPjECxwaAa18g5c2j0lRBZ1R5wU2Xp5BYQL8jReoM',
-        database: process.env.DB_NAME || 'master',
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        database: process.env.DB_NAME,
         timezone: '-05:00',
         ssl: {
             rejectUnauthorized: true,
