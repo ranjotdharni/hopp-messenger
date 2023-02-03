@@ -685,8 +685,9 @@ function dropRoom(roombox, name)
 
     if (Rooms.length == 0)
     {
+        document.getElementById('name-view').innerText = '';
+        document.getElementById('room-view').innerText = '';
         roomView = -1;
-        return;
     }
     else if (roomView == targetIndex)
     {
@@ -711,6 +712,9 @@ function instateRoom(tar)
     var allDisplays = document.getElementsByClassName('msg-display');
     var x = Rooms.map(object => object.name).indexOf(tar.innerText);
     roomView = x;
+
+    document.getElementById('name-view').innerText = Rooms[x].name;
+    document.getElementById('room-view').innerText = Rooms[x].room;
 
     for (var i = 0; i < allTitles.length; i++)
     {
@@ -788,6 +792,11 @@ async function newRoom()
     if (Rooms.length > 9)
     {
         joinError('Room Limit Reached');
+        return;
+    }
+    else if (roomName.length > 30)
+    {
+        joinError('Room Name length must be less than 31');
         return;
     }
     
