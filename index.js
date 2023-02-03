@@ -292,13 +292,29 @@ async function makeRoom(host, id, name)
     );
 }
 
+async function removeRoom(room)
+{
+    await pool.query
+    (
+        'DELETE FROM rooms WHERE room_id = ?',
+        [room]
+    );
+}
+
 async function removeRooms(host)
 {
+    var buffer = await pool.query
+    (
+        'SELECT * FROM rooms WHERE host = ?',
+        [host]
+    );
     await pool.query
     (
         'DELETE FROM rooms WHERE host = ?',
         [host]
     );
+
+    return buffer;
 }
 
 async function getRoom(id)
@@ -357,8 +373,24 @@ io.on('connection', socket => {
         socket.broadcast.to(room).emit('receive-message', message, room);
     });
 
+    socket.on('leave-room', room => {
+        socket.leave(room);
+    });
+
+    socket.on('drop-room', async (room) => {
+        socket.broadcast.to(room).emit('leaving', room);
+        socket.leave(room);
+        await removeRoom(room);
+    });
+
     socket.on('disconnect', async () => {
-        await removeRooms(socket.id);
+        var response = await removeRooms(socket.id);
+        var closed = response[0];
+        for (var i = 0; i < closed.length; i++)
+        {
+            var ROOM = closed[i].room_id;
+            socket.to(ROOM).emit('leaving', ROOM);
+        }
         console.log(socket.id + ' has disconnected from server...');
     });
 });

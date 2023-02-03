@@ -1,4 +1,5 @@
 var session;
+var connected = false;
 var started = false;
 var resources = new Array(10);
 var searchHash = new Array(10);
@@ -26,10 +27,18 @@ document.getElementById('roomslabel').onclick = () =>
 }
 document.getElementById('prevTrack').onclick = async () =>
 {
+    if (!connected)
+    {
+        return;
+    }
     await prev();
 }
 document.getElementById('nextTrack').onclick = async () =>
 {
+    if (!connected)
+    {
+        return;
+    }
     await next();
 }
 document.getElementById('room-search-input').onkeyup = () => 
@@ -57,6 +66,11 @@ document.getElementById('join-btn').onclick = async () =>
     document.getElementById('join-btn-txt').classList.add('dimmed');
     if (entry == '')
     {
+        return;
+    }
+    else if (Rooms.length > 9)
+    {
+        joinError('Room Limit Reached');
         return;
     }
 
@@ -183,10 +197,11 @@ async function newSesh()
     if (sessionStorage.getItem('token'))
     {
         document.getElementById('spotify-tag').classList.add('connected');
-    }
-    else
-    {
-        document.getElementById('spotify-tag').classList.remove('connected');
+        document.getElementById('playbtn').classList.remove('dimmed');
+        document.getElementById('prevbtn').classList.remove('dimmed');
+        document.getElementById('nextbtn').classList.remove('dimmed');
+        document.getElementById('connectbtn').classList.add('dimmed');
+        connected = true;
     }
 
     setTimeout(async function()
@@ -402,6 +417,11 @@ async function fireBeacons()
 
 function connect()
 {
+    if (connected)
+    {
+        return;
+    }
+
     location.href = 'https://accounts.spotify.com/authorize?response_type=code&client_id=646f686836bc44ec98f583414d84a261'
                     + '&scope=streaming%20user-read-playback-state%20user-modify-playback-state%20user-read-currently-playing%20user-read-playback-position%20user-read-email%20user-read-private%20user-read-playback-position%20user-top-read%20user-read-recently-played%20app-remote-control' 
                     + '&redirect_uri=' + window.location.origin + '/middle&state=9564821374953801';
@@ -560,6 +580,11 @@ function moveText()
 
 async function toggle()
 {
+    if (!connected)
+    {
+        return;
+    }
+    
     if (!started)
     {
         started = true;
@@ -642,6 +667,44 @@ function newJoinNotif()
     }
 }
 
+function dropRoom(roombox, name)
+{
+    var targetIndex = Rooms.map(object => object.name).indexOf(name);
+    if (Rooms[targetIndex].host ==  socket.id)
+    {
+        socket.emit('drop-room', Rooms[targetIndex].room);
+    }
+    else
+    {
+        socket.emit('leave-room', Rooms[targetIndex].room);
+    }
+    
+    roombox.remove();
+    document.getElementsByClassName('msg-display')[targetIndex + 1].remove();
+    Rooms.splice(targetIndex, 1);
+
+    if (Rooms.length == 0)
+    {
+        roomView = -1;
+        return;
+    }
+    else if (roomView == targetIndex)
+    {
+        if (targetIndex != 0)
+        {
+            instateRoom(document.getElementsByClassName('room-box-title')[targetIndex - 1]);
+        }
+        else
+        {
+            instateRoom(document.getElementsByClassName('room-box-title')[targetIndex]);
+        }
+    }
+    else if (roomView > targetIndex)
+    {
+        roomView--;
+    }
+}
+
 function instateRoom(tar)
 {
     var allTitles = document.getElementsByClassName('room-box-title');
@@ -663,27 +726,57 @@ function instateRoom(tar)
     tar.classList.add('highlight');
 }
 
-function addRoomBox(arg)
+function addRoomBox(arg, host)
 {
     var inQuestion = document.createElement('div');
+    var theText = document.createElement('p');
+    var theBtn = document.createElement('button');
 
     inQuestion.classList.add('result-box');
-    inQuestion.innerHTML = '<p class = "room-box-title" onclick="instateRoom(this)">'+ arg +'</p>';
-
+    inQuestion.classList.add('room-box');
+    theText.classList.add('room-box-title');
+    theText.setAttribute('onclick', 'instateRoom(this)');
+    theText.innerText = arg;
+    theBtn.classList.add('drop-room-btn');
+    theBtn.innerHTML = '<span class="material-symbols-outlined">delete_forever</span>';
+    inQuestion.appendChild(theText);
+    inQuestion.appendChild(theBtn);
+    if (host)
+    {
+        var crown = document.createElement('img');
+        crown.classList.add('host');
+        crown.src = '/svg/crown.svg';
+        inQuestion.appendChild(crown);
+    }
+    //inQuestion.innerHTML = '<p class = "room-box-title" onclick="instateRoom(this)">'+ arg +'</p>';
     document.getElementById('rooms-dropbox').appendChild(inQuestion);
+    theBtn.addEventListener('click', function() {
+        dropRoom(inQuestion, arg);
+    });
 }
 
 function addRoom(name, host, room)
 {
     Rooms.push({name: name, host: host, room: room});
     roomView = Rooms.length - 1;
+    var isHost;
+
+    if (host == socket.id)
+    {
+        isHost = true;
+    }
+    else
+    {
+        isHost = false;
+    }
 
     var fresh = document.createElement('div');
     fresh.classList.add('msg-display');
     fresh.classList.add('front');
     document.getElementById('dash-hud').appendChild(fresh);
 
-    addRoomBox(name);
+
+    addRoomBox(name, isHost);
     instateRoom(document.getElementsByClassName('room-box-title')[roomView]);
     newJoinNotif();
 }
@@ -692,6 +785,11 @@ async function newRoom()
 {
     var roomName = document.getElementById('room-input').value.trim();
     document.getElementById('room-input').value = '';
+    if (Rooms.length > 9)
+    {
+        joinError('Room Limit Reached');
+        return;
+    }
     
     if (roomName != '')
     {

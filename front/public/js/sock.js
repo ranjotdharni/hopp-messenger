@@ -29,3 +29,8 @@ socket.on('receive-message', (message, room) => {
         newJoinNotif();
     }
 });
+
+socket.on('leaving', room => {
+    var index = Rooms.map(object => object.room).indexOf(room);
+    dropRoom(document.getElementsByClassName('room-box')[index], Rooms[index].name);
+});
