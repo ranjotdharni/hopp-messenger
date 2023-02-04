@@ -196,7 +196,7 @@ async function newSesh()
 
     if (sessionStorage.getItem('token'))
     {
-        document.getElementById('spotify-tag').classList.add('connected');
+        document.getElementById('status-circle').classList.add('connected');
         document.getElementById('playbtn').classList.remove('dimmed');
         document.getElementById('prevbtn').classList.remove('dimmed');
         document.getElementById('nextbtn').classList.remove('dimmed');
@@ -257,11 +257,12 @@ function addBeacon(arg)
                 Beacons[i].id = searchHash[arg].Sid;
                 Beacons[i].name = searchHash[arg].Sname;
                 Beacons[i].type = searchHash[arg].Stype;
-                break;
+                instateBeacons();
+                return;
             }
         }
 
-        instateBeacons();
+        errBeacon('Beacon limit reached.');
     }
 }
 
@@ -300,18 +301,28 @@ function instateBeacons()
 
     for (var i = 0; i < middle.length; i++)
     {
-        middle[i].innerText = Beacons[i].name;
+        let buffer = Beacons[i].name;
+        if (buffer.length > 26)
+        {
+            middle[i].innerText = buffer.slice(0, 23) + '...';
+        }
+        else
+        {
+            middle[i].innerText = buffer;
+        }
     }
 }
 
 function errBeacon(arg)
 {
-    document.getElementById('control-error').innerText = arg;
-    document.getElementById('control-error').classList.remove('invisible');
+    var hubris = document.createElement('p');
+    hubris.innerText = arg;
+    hubris.classList.add('control-error');
+    document.getElementById('dash-control').appendChild(hubris);
 
     setTimeout(function ()
     {
-        document.getElementById('control-error').classList.add('invisible');
+        hubris.remove();
     }, 7000);
 }
 
@@ -320,7 +331,12 @@ async function fireBeacons()
     var artists = 0;
     var tracks = 0;
 
-    if (Genres.length == 0)
+    if (!connected)
+    {
+        errBeacon('First connect to your Spotify account below.');
+        return;
+    }
+    else if (Genres.length == 0)
     {
         errBeacon('Please select at least 1 genre.');
         return;
@@ -687,6 +703,7 @@ function dropRoom(roombox, name)
     {
         document.getElementById('name-view').innerText = '';
         document.getElementById('room-view').innerText = '';
+        document.getElementById('host-icon').classList.remove('is-host');
         roomView = -1;
     }
     else if (roomView == targetIndex)
@@ -715,6 +732,15 @@ function instateRoom(tar)
 
     document.getElementById('name-view').innerText = Rooms[x].name;
     document.getElementById('room-view').innerText = Rooms[x].room;
+    if (socket.id == Rooms[x].host)
+    {
+        document.getElementById('host-icon').classList.remove('is-host');
+        document.getElementById('host-icon').classList.add('is-host');
+    }
+    else
+    {
+        document.getElementById('host-icon').classList.remove('is-host');
+    }
 
     for (var i = 0; i < allTitles.length; i++)
     {
@@ -791,12 +817,12 @@ async function newRoom()
     document.getElementById('room-input').value = '';
     if (Rooms.length > 9)
     {
-        joinError('Room Limit Reached');
+        joinError('Room Limit Reached.');
         return;
     }
     else if (roomName.length > 30)
     {
-        joinError('Room Name length must be less than 31');
+        joinError('Room Nickname must be 30 characters or less.');
         return;
     }
     

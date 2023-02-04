@@ -15,7 +15,10 @@
 
     <div id = "dashboard-container">
         <div id = "dash-hud" class = "panel">
-            <div id = "msg-header" class = "headerbox">Message HUD</div>
+            <div id = "msg-header" class = "headerbox">
+                Message HUD
+                <img src="/svg/crown.svg" id="host-icon" />
+            </div>
             <div id = "msg-base" class = "msg-display">Make or Join a Room...</div>
             <input placeholder = "Type something..." id = "msg-input">
             <label id = "send-label">Send</label>
@@ -91,12 +94,12 @@
                 </ul>
             </div>
             <button id = "control-fire" class = "btn-style" onclick="fireBeacons()"><span class="material-symbols-outlined">chevron_right</span></button>
-            <p id = "control-error" class = "invisible"></p>
         </div>
         <div id = "dash-recc" class = "panel">
             <div id = "recc-header" class = "headerbox">Recommended</div>
             <label id = "conn-label" class = "control-label">Connect</label>
             <p id = "spotify-tag">Spotify</p>
+            <div id = "status-circle"></div>
 
             <img id = "track-img" />
             <div id = "name-wrap" class = "recc-wrap"><p id = "name-tag" class = "recc-tag"></p></div>
@@ -113,9 +116,9 @@
             <label id = "room-create-label">New Room:</label>
             <input placeholder = "Enter Nickname (optional)" id = "room-input">
             <label id = "create-btn-label">Create Room</label>
-            <button id = "create-btn" class = "btn-style"><span class="material-symbols-outlined">home</span></button>
+            <button id = "create-btn" class = "btn-style"><span class="material-symbols-outlined re-offset">home</span></button>
             <label id = "join-btn-label" class = "dimmed">Join Room</label>
-            <button id = "join-btn" class = "btn-style"><span class="material-symbols-outlined dimmed" id = "join-btn-txt">group_add</span></button>
+            <button id = "join-btn" class = "btn-style"><span class="material-symbols-outlined re-offset dimmed" id = "join-btn-txt">group_add</span></button>
 
             <div id = "room-select" class = "drop-select">
                 <label id = "roomslabel" tabindex="0">Rooms<span class="material-symbols-outlined centered">expand_more</span></label>
