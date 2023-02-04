@@ -93,16 +93,16 @@ app.get('/portal', function(req, res)
 
 app.put('/portal', async function(req, res)
 {   
-    const auth = await getAuthInfo(req.body.username)
+    const auth = await getAuthInfo(req.body.username);
     
     if (!auth[0].length)
     {
-        res.send(JSON.parse('{"status":401, "message":"(User not found)"}'));
+        res.send(JSON.parse('{"status":401, "message":"User not found"}'));
         res.end();
     }
     else if(req.body.password != auth[0][0].password)
     {
-        res.send(JSON.parse('{"status":401, "message":"(Username or Password incorrect)"}'));
+        res.send(JSON.parse('{"status":401, "message":"Username or Password incorrect"}'));
         res.end();
     }
     else
@@ -117,14 +117,13 @@ app.put('/portal', async function(req, res)
         const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
         
         res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true, secure: true});
-        res.send(JSON.parse('{"status":200, "message":"(Session created)"}'))
+        res.send(JSON.parse('{"status":200, "message":"(Session created)"}'));
         res.end();
     }
 });
 
 app.post('/portal', async function(req, res)
 {   
-
     const result = await registerUser(req.body.username, req.body.password);
 
     if(result instanceof Error)
@@ -135,6 +134,36 @@ app.post('/portal', async function(req, res)
     else
     {
         res.send(JSON.parse('{"status":200, "message":"(User created)"}')).end();
+    }
+});
+
+app.put('/guest', async function(req, res)
+{
+    const sessionToken = uuid.v4();
+    const sessionUser = req.body.username;
+
+    const current = new Date();
+    current.setHours(current.getHours() + 2);
+    const sessionExpiresAt = current;
+
+    const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
+        
+    res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true, secure: true});
+    res.send(JSON.parse('{"status":200, "message":"(Session created)"}'));
+    res.end();
+});
+
+app.post('/guest', async function(req, res)
+{
+    var result = await registerGuest();
+
+    if (result instanceof Error)
+    {
+        console.log(result);
+    }
+    else
+    {
+        res.send(JSON.parse('{"status":200, "guest_user":"' + result + '"}')).end();
     }
 });
 
@@ -220,6 +249,7 @@ async function grabToken()
         },
     });
 
+    //!!GLOBAL!!
     genesis = await buffer.json();
 
     if (genesis.error)
@@ -247,6 +277,22 @@ async function registerUser(u, p)
     catch(err)
     {
         return err;
+    }
+}
+
+async function registerGuest()
+{
+    try {
+        var seed = 'guest#' + uuid.v4().slice(24);
+        var at = new Date();
+        await pool.query
+        (
+            'INSERT INTO guest (username, created_at) VALUES (?, FROM_UNIXTIME(?))',
+            [seed, (at.getTime())/1000]
+        );
+        return seed;
+    } catch (error) {
+        return error;
     }
 }
 

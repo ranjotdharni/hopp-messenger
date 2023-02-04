@@ -11,6 +11,10 @@ document.getElementById('createreenter').addEventListener('input', flagBurn);
 setTimeout(function() {
     document.getElementById("window").classList.remove("fadeaway");
 }, 500);
+document.getElementById('recoverbutton').onclick = async () =>
+{
+    await makeGuest();
+}
 
 var session;
 
@@ -148,7 +152,7 @@ async function create(u, p)
             }
         });
 
-    final = await response.json();
+    var final = await response.json();
 
     if (final.status != 401)
     {
@@ -157,6 +161,40 @@ async function create(u, p)
     else
     {
         console.log(final.message);
+    }
+} 
+
+async function makeGuest()
+{
+    const response = await fetch(window.location.origin + '/guest',
+        {
+            method: 'POST',
+            headers:
+            {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+        });
+
+    var middle = await response.json();
+
+    var almost = await fetch(window.location.origin + '/guest',
+    { 
+        method: 'PUT',
+        body: JSON.stringify(
+            {
+                username: middle.guest_user,
+            }),
+        headers:
+        {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    });
+
+    var final = await almost.json();
+
+    if (final.status == 200)
+    {
+        location.href = window.location.origin + '/home';
     }
 }
 
