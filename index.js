@@ -1,6 +1,7 @@
 var genesis;
 var instance;
 
+const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
 const mysql = require('mysql2');
 const express = require('express');
@@ -100,7 +101,7 @@ app.put('/portal', async function(req, res)
         res.send(JSON.parse('{"status":401, "message":"User not found"}'));
         res.end();
     }
-    else if(req.body.password != auth[0][0].password)
+    else if (!(await bcrypt.compare(req.body.password, auth[0][0].password)))
     {
         res.send(JSON.parse('{"status":401, "message":"Username or Password incorrect"}'));
         res.end();
@@ -117,7 +118,7 @@ app.put('/portal', async function(req, res)
         const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
         
         res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true, secure: true});
-        res.send(JSON.parse('{"status":200, "message":"(Session created)"}'));
+        res.send(JSON.parse('{"status":200, "message":"Session created"}'));
         res.end();
     }
 });
@@ -126,14 +127,14 @@ app.post('/portal', async function(req, res)
 {   
     const result = await registerUser(req.body.username, req.body.password);
 
-    if(result instanceof Error)
+    if (result instanceof Error)
     {
-        console.log("(duplicate entry; not injected)");
-        res.send(JSON.parse('{"status":401, "message":"(User already exists)"}')).end();
+        console.log("[duplicate entry; not injected]");
+        res.send(JSON.parse('{"status":401, "message":"User already exists"}')).end();
     }
     else
     {
-        res.send(JSON.parse('{"status":200, "message":"(User created)"}')).end();
+        res.send(JSON.parse('{"status":200, "message":"User created"}')).end();
     }
 });
 
@@ -265,11 +266,12 @@ async function grabToken()
 
 async function registerUser(u, p)
 {   
+    const hash = await bcrypt.hash(p, 10);
     try{
     const result = await pool.query
     (
         'INSERT INTO user_info (username, password) VALUES (?, ?)',
-        [u, p]
+        [u, hash]
     );
 
     return result;
