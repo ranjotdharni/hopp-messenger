@@ -226,6 +226,33 @@ app.get('/request', async function(req, res)
     }
 });
 
+app.post('/request', async function(req, res)
+{
+    console.log('Refresh User Token fired...');
+    var token = req.body.refresh;
+
+    let buffer = await fetch('https://accounts.spotify.com/api/token?grant_type=refresh_token&refresh_token=' + token, 
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + client_secret,
+        },
+    });
+
+    let final = await buffer.json();
+
+    if (final.error)
+    {
+        console.log('Spotify Token Error: ' + final.error_description);
+        res.send(JSON.parse('{"error":"' + final.error_description + '"}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"token":"' + final.access_token + '"}')).end();
+    }
+});
+
 async function onLaunch(error)
 {
     await grabToken();
@@ -236,7 +263,7 @@ async function onLaunch(error)
     }
     else
     {
-        console.log('Server live on {PORT: "' + (process.env.PORT || 8080) + '"}');
+        console.log('Server live on PORT ' + (process.env.PORT || 8080) + ' =D');
     }
 }
 

@@ -14,6 +14,37 @@ window.onload = async function()
 {
     await newSesh();
 };
+
+async function refreshToken()
+{
+    console.log('Refreshing Access Token...');
+    console.log('Expired Token: ' + sessionStorage.getItem('token'));
+    var buffer = await fetch(window.location.origin + '/request',
+    {
+        method: 'POST',
+        body: JSON.stringify(
+            {
+                refresh: sessionStorage.getItem('refresh'),
+            }),
+        headers:
+        {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    });
+    var final = await buffer.json();
+
+    if (final.error)
+    {
+        console.log(final.error);
+    }
+    else
+    {
+        sessionStorage.removeItem('token');
+        sessionStorage.setItem('token', final.token);
+        console.log('Refreshed Access Token: ' + sessionStorage.getItem('token'));
+    }
+}
+
 document.getElementsByClassName('search-input')[0].onkeyup = searchArtists;
 document.getElementsByClassName('search-input')[0].onclick = searchArtists;
 document.getElementById('togglePlay').onclick = toggle;
@@ -114,8 +145,45 @@ async function getUser()
     }
 }
 
+async function expSession()
+{
+    let buffer = await fetch("https://api.spotify.com/v1/recommendations?limit=10&market=US&seed_artists=6icQOAFXDZKsumw3YXyusw"
+            + "&seed_genres=hip-hop"
+            + "&seed_tracks=2p8IUWQDrpjuFltbdgLOag", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + session.session_key,
+            },
+    });
+
+    let result = await buffer.json();
+
+    if (result.error)
+    {
+        console.log(result.error);
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+async function instateSession()
+{
+    if ((session == undefined) || await expSession())
+    {
+        var middle = await fetch(window.location.origin + '/portal');
+        session = await middle.json();
+    }
+}
+
 async function searchArtists()
 {
+    await instateSession();
+
     let searchTerm = 'https://api.spotify.com/v1/search?q=' 
             + document.getElementsByClassName('search-input')[0].value.replace(/ /g, "%20")
             + '&type=artist&market=US&limit=10&offset=0';
@@ -139,7 +207,7 @@ async function searchArtists()
         searchHash[i].Sname = (result[i].name);
         searchHash[i].Stype = (result[i].type);
 
-        if(result[i].name.length > 26)
+        if (result[i].name.length > 26)
         {
             boxes[i].innerText = ((result[i].name.slice(0, 23) + '...') || '');
         }
@@ -154,6 +222,8 @@ document.getElementsByClassName('search-input')[1].onkeyup = searchTracks;
 document.getElementsByClassName('search-input')[1].onclick = searchTracks; 
 async function searchTracks()
 {
+    await instateSession();
+
     let searchTerm = 'https://api.spotify.com/v1/search?q=' 
             + document.getElementsByClassName('search-input')[1].value.replace(/ /g, "%20")
             + '&type=track&market=US&limit=10&offset=0';
@@ -191,8 +261,7 @@ async function searchTracks()
 async function newSesh()
 {
     await getUser();
-    var middle = await fetch(window.location.origin + '/portal');
-    session = await middle.json();
+    await instateSession();
 
     if (sessionStorage.getItem('token'))
     {
@@ -328,6 +397,8 @@ function errBeacon(arg)
 
 async function fireBeacons()
 {
+    await instateSession();
+
     var artists = 0;
     var tracks = 0;
 
@@ -431,7 +502,7 @@ async function fireBeacons()
     }
 }
 
-function connect()
+async function connect()
 {
     if (connected)
     {
@@ -445,27 +516,44 @@ function connect()
 
 async function instateMusic()
 {
-    await fetch('https://api.spotify.com/v1/me/player/repeat?state=context&device_id=' + device, {
-        method: 'PUT',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-        },
-    });
-
-    await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
-        method: 'PUT',
-        body: JSON.stringify({
-            uris: uriGrab(1),
-            position_ms: 0,
-        }),
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
-        },
-    });
+    try
+    {
+        await fetch('https://api.spotify.com/v1/me/player/repeat?state=context&device_id=' + device, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            },
+        });
+    
+        await fetch('https://api.spotify.com/v1/me/player/play?device_id=' + device, {
+            method: 'PUT',
+            body: JSON.stringify({
+                uris: uriGrab(1),
+                position_ms: 0,
+            }),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + sessionStorage.getItem('token'),
+            },
+        });
+    }
+    catch (error)
+    {
+        if (error.status == 401)
+        {
+            console.log(error);
+            await refreshToken();
+            await instateMusic();
+        }
+        else
+        {
+            console.log(error);
+            return;
+        }
+    }
 }
 
 function hashResources(rawData)
