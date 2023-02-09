@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
 const mysql = require('mysql2');
 const express = require('express');
-const path = require('path');
+const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const uuid = require('uuid');
 const router = require(__dirname + '/front/router/pages.js');
@@ -18,6 +18,7 @@ const io = require('socket.io')(server);
 app.use(express.urlencoded({extended: true}));  //Place the attributes that interpret data first
 app.use(express.json());
 app.use(cookieParser());
+app.use(favicon(__dirname + '/favicon.ico'));
 app.use(express.static(__dirname + '/front/public'));
 app.use('/home', guard); //Ex: must come after cookie-parser b/cause this method uses cookie-parser
 app.use('/request', guard);

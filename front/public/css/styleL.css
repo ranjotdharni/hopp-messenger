@@ -55,8 +55,8 @@ a
     width: 80vw;
     height: 75vh;
     margin-left: 10vw;
-    position: relative;
-    top: -135.5vh;
+    position: absolute;
+    top: 2.5vh;
     z-index: 3;
     display: flex;
     flex-direction: row;
@@ -236,7 +236,7 @@ a
 {
     background: rgba(0, 0, 0, 0);
     height: 66%;
-    width: 45%;
+    width: 40%;
     position: relative;
     top: 17.42%;
     overflow: hidden;
@@ -263,7 +263,7 @@ a
     margin-left: 2.5%;
     display: inline-block;
     position: relative;
-    top: -68.77192vh;
+    top: 10vh;
     opacity: 1;
     z-index: 1;
     transition: top 1s ease-in, opacity 1s ease-in;
@@ -494,7 +494,7 @@ a
 
 .slideIn
 {
-    top: 0 !important;
+    top: 80vh !important;
 }
 
 .fader
@@ -559,6 +559,14 @@ a
         0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base),
         0px 0px 10px var(--neon-color), 0px 0px 20px var(--neon-color), 0px 0px 40px var(--neon-color),
         0px 0px 50px var(--neon-color), 0px 0px 70px var(--neon-color), 0px 0px 100px var(--neon-color);
+    }
+}
+
+@-moz-document url-prefix() 
+{
+    .dynamic-image
+    {
+        flex-shrink: 0;
     }
 }
 

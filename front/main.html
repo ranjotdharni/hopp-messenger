@@ -19,7 +19,7 @@
                 Message HUD
                 <img src="/svg/crown.svg" id="host-icon" />
             </div>
-            <div id = "msg-base" class = "msg-display">Make or Join a Room...</div>
+            <div id = "msg-base" class = "msg-display" style="background-color:rgba(0,0,0,0)">Make or Join a Room...</div>
             <input placeholder = "Type something..." id = "msg-input">
             <label id = "send-label">Send</label>
             <button id = "msg-send" class = "btn-style"><span class="material-symbols-outlined">chevron_right</span></button>
@@ -99,8 +99,7 @@
             <div id = "recc-header" class = "headerbox">Recommended</div>
             <label id = "conn-label" class = "control-label">Connect</label>
             <p id = "spotify-tag">Spotify</p>
-            <div id = "status-circle"></div>
-
+            <span id = "status-circle" class="material-symbols-outlined">link</span>
             <img id = "track-img" />
             <div id = "name-wrap" class = "recc-wrap"><p id = "name-tag" class = "recc-tag"></p></div>
             <div id = "artist-wrap" class = "recc-wrap"><p id = "artist-tag" class = "recc-tag"></p></div>
@@ -187,6 +186,10 @@
 
             player.addListener('account_error', ({ message }) => {
                 console.error(message);
+                connected = false;
+                nonPre = true;
+                document.getElementById('status-circle').classList.remove('connected');
+                document.getElementById('status-circle').classList.add('nonPre');
             });
 
             player.connect();

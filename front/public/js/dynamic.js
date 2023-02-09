@@ -1,5 +1,6 @@
 var session;
 var connected = false;
+var nonPre = false;
 var started = false;
 var resources = new Array(10);
 var searchHash = new Array(10);
@@ -58,19 +59,33 @@ document.getElementById('roomslabel').onclick = () =>
 }
 document.getElementById('prevTrack').onclick = async () =>
 {
-    if (!connected)
+    if (!connected && !nonPre)
     {
         return;
     }
-    await prev();
+    else if (nonPre)
+    {
+        connError('This functionality is restricted to Spotify Premium Users.');
+    }
+    else
+    {
+        await prev();
+    }
 }
 document.getElementById('nextTrack').onclick = async () =>
 {
-    if (!connected)
+    if (!connected && !nonPre)
     {
         return;
     }
-    await next();
+    else if (nonPre)
+    {
+        connError('This functionality is restricted to Spotify Premium Users.');
+    }
+    else
+    {
+        await next();
+    }
 }
 document.getElementById('room-search-input').onkeyup = () => 
 {
@@ -263,7 +278,7 @@ async function newSesh()
     await getUser();
     await instateSession();
 
-    if (sessionStorage.getItem('token'))
+    if (sessionStorage.getItem('token') && !(nonPre))
     {
         document.getElementById('status-circle').classList.add('connected');
         document.getElementById('playbtn').classList.remove('dimmed');
@@ -271,6 +286,11 @@ async function newSesh()
         document.getElementById('nextbtn').classList.remove('dimmed');
         document.getElementById('connectbtn').classList.add('dimmed');
         connected = true;
+    }
+    else if (nonPre)
+    {
+        document.getElementById('status-circle').classList.remove('connected');
+        document.getElementById('status-circle').classList.add('nonPre');
     }
 
     setTimeout(async function()
@@ -684,8 +704,13 @@ function moveText()
 
 async function toggle()
 {
-    if (!connected)
+    if (!connected && !nonPre)
     {
+        return;
+    }
+    else if (nonPre)
+    {
+        connError('This functionality is restricted to Spotify Premium Users.');
         return;
     }
     
@@ -745,6 +770,18 @@ function joinError(message)
     document.getElementById('dash-tethers').appendChild(err);
     setTimeout(function() {
         document.getElementsByClassName('join-res')[0].remove();
+    }, 7000);
+    return err;
+}
+
+function connError(message)
+{
+    var err = document.createElement('p');
+    err.classList.add('conn-error');
+    err.innerText = message;
+    document.getElementById('dash-recc').appendChild(err);
+    setTimeout(function() {
+        document.getElementsByClassName('conn-error')[0].remove();
     }, 7000);
     return err;
 }
