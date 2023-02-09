@@ -12,7 +12,6 @@
 </head>
 <body>
     <div id = "window" class = "fadeaway"></div>
-    <img id = "filter" />
     
     <div id = "logincontainer">
         <div class = "dashbar">Log In</div>
@@ -26,7 +25,7 @@
             </div>
 
             <button id = "loginbutton" type = "submit">Login</button>
-            <button id = "recoverbutton" type = "button">Recover</button>
+            <button id = "recoverbutton" type = "button">Guest</button>
         </form>
 
         <p>
@@ -58,7 +57,7 @@
             </ul>
 
             <button id = "createbutton" type = "submit">Create</button>
-            <button id = "aboutbutton" type = "button">About</button>
+            <button id = "aboutbutton" type = "button" onclick="window.open(window.location.origin, '_blank')">About</button>
         </form>
     </div>
 

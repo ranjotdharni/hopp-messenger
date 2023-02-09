@@ -13,4 +13,9 @@ router.get('/home', (req, res) =>
     res.sendFile(path.resolve(__dirname + '/../main.html'));
 });
 
+router.get('/middle', (req, res) =>
+{
+    res.sendFile(path.resolve(__dirname + '/../middle.html'));
+});
+
 module.exports = router;

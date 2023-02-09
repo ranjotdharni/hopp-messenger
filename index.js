@@ -1,22 +1,30 @@
+var genesis;
+var instance;
+
+const bcrypt = require('bcryptjs');
 const fetch = require('node-fetch');
 const mysql = require('mysql2');
 const express = require('express');
-const path = require('path');
+const favicon = require('serve-favicon');
 const cookieParser = require('cookie-parser');
 const uuid = require('uuid');
 const router = require(__dirname + '/front/router/pages.js');
 const app = express();
+require('dotenv').config();
+const client_secret = process.env.client_secret;
+const server = app.listen(process.env.PORT || 8080, onLaunch());
+const io = require('socket.io')(server);
 
 app.use(express.urlencoded({extended: true}));  //Place the attributes that interpret data first
 app.use(express.json());
 app.use(cookieParser());
+app.use(favicon(__dirname + '/favicon.ico'));
 app.use(express.static(__dirname + '/front/public'));
-app.use('/home', guard) //Ex: must come after cookie-parser b/cause this method uses cookie-parser
+app.use('/home', guard); //Ex: must come after cookie-parser b/cause this method uses cookie-parser
+app.use('/request', guard);
+app.use('/user', guard);
+app.use('/room', guard);
 app.use('/', router);
-
-const client_secret = process.env.client_secret;
-var genesis;
-var instance;
 
 const pool = mysql.createPool(
     {
@@ -87,16 +95,16 @@ app.get('/portal', function(req, res)
 
 app.put('/portal', async function(req, res)
 {   
-    const auth = await getAuthInfo(req.body.username)
+    const auth = await getAuthInfo(req.body.username);
     
     if (!auth[0].length)
     {
-        res.send(JSON.parse('{"status":401, "message":"(User not found)"}'));
+        res.send(JSON.parse('{"status":401, "message":"User not found"}'));
         res.end();
     }
-    else if(req.body.password != auth[0][0].password)
+    else if (!(await bcrypt.compare(req.body.password, auth[0][0].password)))
     {
-        res.send(JSON.parse('{"status":401, "message":"(Username or Password incorrect)"}'));
+        res.send(JSON.parse('{"status":401, "message":"Username or Password incorrect"}'));
         res.end();
     }
     else
@@ -111,24 +119,138 @@ app.put('/portal', async function(req, res)
         const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
         
         res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true, secure: true});
-        res.send(JSON.parse('{"status":200, "message":"(Session created)"}'))
+        res.send(JSON.parse('{"status":200, "message":"Session created"}'));
         res.end();
     }
 });
 
 app.post('/portal', async function(req, res)
 {   
-
     const result = await registerUser(req.body.username, req.body.password);
 
-    if(result instanceof Error)
+    if (result instanceof Error)
     {
-        console.log("(duplicate entry; not injected)");
-        res.send(JSON.parse('{"status":401, "message":"(User already exists)"}')).end();
+        console.log("[duplicate entry; not injected]");
+        res.send(JSON.parse('{"status":401, "message":"User already exists"}')).end();
     }
     else
     {
-        res.send(JSON.parse('{"status":200, "message":"(User created)"}')).end();
+        res.send(JSON.parse('{"status":200, "message":"User created"}')).end();
+    }
+});
+
+app.put('/guest', async function(req, res)
+{
+    const sessionToken = uuid.v4();
+    const sessionUser = req.body.username;
+
+    const current = new Date();
+    current.setHours(current.getHours() + 2);
+    const sessionExpiresAt = current;
+
+    const final = await createSesh(sessionToken, sessionUser, sessionExpiresAt.getTime());
+        
+    res.cookie('session_token', sessionToken, {expires:sessionExpiresAt, httpOnly: true, secure: true});
+    res.send(JSON.parse('{"status":200, "message":"(Session created)"}'));
+    res.end();
+});
+
+app.post('/guest', async function(req, res)
+{
+    var result = await registerGuest();
+
+    if (result instanceof Error)
+    {
+        console.log(result);
+    }
+    else
+    {
+        res.send(JSON.parse('{"status":200, "guest_user":"' + result + '"}')).end();
+    }
+});
+
+app.get('/user', async function(req, res)
+{
+    if (!req.cookies)
+    {   
+        res.send(JSON.parse('{"status":400, "error":"Bad Request"}')).end();
+        return
+    }
+
+    const sessionToken = req.cookies['session_token'];
+    if (!sessionToken)
+    {
+        res.send(JSON.parse('{"status":400, "error":"Bad Request"}')).end();
+        return
+    }
+
+    const result = await pool.query
+    (
+        'SELECT user FROM sessions WHERE token = ?',
+        [sessionToken]
+    );
+
+    if (result[0].length == 0)
+    {
+        res.send(JSON.parse('{"status":401, "error":"session not found"}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"status":200, "username":"' + result[0][0].user + '"}')).end();
+    }
+});
+
+app.get('/request', async function(req, res)
+{
+    var code = req.query.code;
+    var uri = req.query.uri;
+
+    let buffer = await fetch('https://accounts.spotify.com/api/token?grant_type=authorization_code&code=' + code + '&redirect_uri=' + uri, 
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + client_secret,
+        },
+    });
+
+    let final = await buffer.json();
+
+    if (final.error)
+    {
+        console.log('Spotify Token Error: ' + final.error_description);
+        res.send(JSON.parse('{"error":"' + final.error_description + '"}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"token":"' + final.access_token + '", "refresh":"' + final.refresh_token + '"}')).end();
+    }
+});
+
+app.post('/request', async function(req, res)
+{
+    console.log('Refresh User Token fired...');
+    var token = req.body.refresh;
+
+    let buffer = await fetch('https://accounts.spotify.com/api/token?grant_type=refresh_token&refresh_token=' + token, 
+    {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': 'Basic ' + client_secret,
+        },
+    });
+
+    let final = await buffer.json();
+
+    if (final.error)
+    {
+        console.log('Spotify Token Error: ' + final.error_description);
+        res.send(JSON.parse('{"error":"' + final.error_description + '"}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"token":"' + final.access_token + '"}')).end();
     }
 });
 
@@ -138,11 +260,11 @@ async function onLaunch(error)
 
     if (error)
     {
-        console.log('Error: ', error);
+        console.log('Start-up Error: ', error);
     }
     else
     {
-        console.log('Server live; PORT ' + (process.env.PORT || 8080));
+        console.log('Server live on PORT ' + (process.env.PORT || 8080) + ' =D');
     }
 }
 
@@ -156,11 +278,12 @@ async function grabToken()
         },
     });
 
+    //!!GLOBAL!!
     genesis = await buffer.json();
 
     if (genesis.error)
     {
-        console.log(genesis.error.message);
+        console.log('Token acquirement error: ' + genesis.error);
     }
     else
     {
@@ -171,11 +294,12 @@ async function grabToken()
 
 async function registerUser(u, p)
 {   
+    const hash = await bcrypt.hash(p, 10);
     try{
     const result = await pool.query
     (
         'INSERT INTO user_info (username, password) VALUES (?, ?)',
-        [u, p]
+        [u, hash]
     );
 
     return result;
@@ -183,6 +307,22 @@ async function registerUser(u, p)
     catch(err)
     {
         return err;
+    }
+}
+
+async function registerGuest()
+{
+    try {
+        var seed = 'guest#' + uuid.v4().slice(24);
+        var at = new Date();
+        await pool.query
+        (
+            'INSERT INTO guest (username, created_at) VALUES (?, FROM_UNIXTIME(?))',
+            [seed, (at.getTime())/1000]
+        );
+        return seed;
+    } catch (error) {
+        return error;
     }
 }
 
@@ -210,7 +350,7 @@ async function createSesh(token, user, expiry)
 
 async function authSession(token)
 {
-    result = await pool.query
+    var result = await pool.query
     (
         'SELECT expires_at FROM sessions WHERE token = ?',
         [token]
@@ -219,5 +359,114 @@ async function authSession(token)
     return result;
 }
 
+async function makeRoom(host, id, name)
+{
+    await pool.query
+    (
+        'INSERT INTO rooms (host, room_id, name) VALUES (?, ?, ?)',
+        [host, id, name]
+    );
+}
 
-app.listen(process.env.PORT || 8080, onLaunch());   //Ensure listen call is at the end of server
+async function removeRoom(room)
+{
+    await pool.query
+    (
+        'DELETE FROM rooms WHERE room_id = ?',
+        [room]
+    );
+}
+
+async function removeRooms(host)
+{
+    var buffer = await pool.query
+    (
+        'SELECT * FROM rooms WHERE host = ?',
+        [host]
+    );
+    await pool.query
+    (
+        'DELETE FROM rooms WHERE host = ?',
+        [host]
+    );
+
+    return buffer;
+}
+
+async function getRoom(id)
+{
+    return await pool.query
+    (
+        'SELECT * FROM rooms WHERE room_id = ?',
+        [id]
+    );
+}
+
+app.post('/room', async function(req, res)
+{
+    var id = req.body.socket;
+    var room = await getRoom(id);
+
+    if (room[0].length != 0)
+    {
+        let result = room[0][0];
+        res.send(JSON.parse('{"host":"' + result.host + '", "room_id":"' + result.room_id + '", "name":"' + result.name + '"}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"error":"Room not found"}')).end();
+    }
+});
+
+app.put('/room', async function(req, res)
+{
+    var newHost = req.body.socket;
+    var roomName;
+    var newRoomID = uuid.v4().slice(24);
+
+    if (!req.body.name)
+    {
+        roomName = req.body.user + newRoomID;
+    }
+    else
+    {
+        roomName = req.body.name;
+    }
+
+    await makeRoom(newHost, newRoomID, roomName);
+    console.log('Room created with ID ' + newRoomID);
+    res.send(JSON.parse('{"message":"New Room -> Host: ' + newHost + ' Room ID: ' + newRoomID + '", "room_id":"' + newRoomID + '", "host":"' + newHost + '", "room_name":"' + roomName + '"}')).end();
+});
+
+io.on('connection', socket => {
+    console.log(socket.id + ' has connected...');
+
+    socket.on('join-room', room => {
+        socket.join(room);
+    });
+
+    socket.on('new-message', (message, room) => {
+        socket.broadcast.to(room).emit('receive-message', message, room);
+    });
+
+    socket.on('leave-room', room => {
+        socket.leave(room);
+    });
+
+    socket.on('drop-room', async (room) => {
+        socket.broadcast.to(room).emit('leaving', room);
+        socket.leave(room);
+        await removeRoom(room);
+    });
+
+    socket.on('disconnect', async () => {
+        var response = await removeRooms(socket.id);
+        var closed = response[0];
+        for (var i = 0; i < closed.length; i++)
+        {
+            var ROOM = closed[i].room_id;
+            socket.to(ROOM).emit('leaving', ROOM);
+        }
+        console.log(socket.id + ' has disconnected from server...');
+    });
+});

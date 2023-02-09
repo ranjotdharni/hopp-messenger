@@ -1,0 +1,1069 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap');
+
+:root
+{
+    /*--page-base: #0c0707;*/
+    --page-base: #140e0e;
+    --neon-base: #d0fce1;
+    --neon-color: #2faf74;/*#FF9E9E;*/
+    --orange-base: #ffa46f;
+    --orange-color: #FF5E00;
+}
+
+::-webkit-scrollbar
+{
+    width: 0.7vw;
+}
+
+::-webkit-scrollbar-track
+{
+    margin-block: 0.25vh;
+}
+
+::-webkit-scrollbar-thumb
+{
+    border: 0.2vw solid rgba(0, 0, 0, 0);
+    background-clip: padding-box;
+    background-color: #140e0e;
+    border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb:hover
+{
+    background-color: #2c2424;
+}
+
+*
+{
+    margin: 0;
+    padding: 0;
+}
+
+body
+{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#dynamic-bg-container
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: space-evenly;
+    justify-content: space-evenly;
+    z-index: 1;
+    background-image: url('/svg/background.svg');
+}
+
+#dash-hud
+{
+    grid-area: hud;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+#dash-control
+{
+    grid-area: control;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+#dash-recc
+{
+    grid-area: recc;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+#dash-tethers
+{
+    grid-area: teth;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+#dashboard-container
+{
+    width: 80%;
+    height: 80%;
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 20% 20% 20% 20% 20%;
+    grid-template-rows: auto;
+    gap: 10px 10px;
+    grid-template-areas: 
+        "hud hud hud control control"
+        "hud hud hud recc recc"
+        "teth teth teth teth teth";
+}
+
+.panel
+{
+    box-shadow: -0.25vw 0.75vh 5px rgba(0, 0, 0, 0.75),
+                0.2vw -0.6vh 5px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(0px);
+    background-color: var(--page-base) !important;
+}
+
+.panel:focus-within
+{
+    z-index: 2;
+}
+
+.result-box
+{
+    width: 100%;
+    height: 10% !important;
+    position: relative;
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.result-box p
+{
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    position: relative;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 0.8vw;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.result-box-button
+{
+    width: 10%;
+    height: 100%;
+    z-index: 2;
+    position: absolute;
+    left: 90%;
+    top: 0%;
+    background-color: black;
+    font-family: 'JetBrains Mono', monospace;
+    border: none;
+}
+
+.result-box-button span
+{
+    color: white;
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9vw;
+}
+
+.result-box-button:hover span
+{
+    cursor: pointer;
+    color: var(--neon-color);
+}
+
+.beacon-btn:hover span
+{
+    color: #af2f2f !important;
+}
+
+.drop-input ul
+{
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    position: absolute;
+    border: 1px solid var(--neon-color);
+    background-color: black;
+    box-sizing: border-box;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.drop-input input
+{
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    position: absolute;
+    padding: 0;
+    border: 1px solid var(--neon-color);
+    color: white;
+    font-size: 0.8vw;
+    font-family: 'JetBrains Mono', monospace;
+    background-color: black;
+    outline: none;
+    box-sizing: border-box;
+    padding-left: 1%;
+}
+
+.drop-select ul
+{
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    position: relative;
+    border-bottom: 1px solid var(--neon-color);
+    background-color: black;
+    box-sizing: border-box;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.drop-select label
+{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7vw;
+    color: white;
+    border-bottom: 1px solid var(--neon-color);
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    position: absolute;
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-select label:hover
+{
+    cursor: pointer;
+    background-color: rgb(27, 26, 26);
+}
+
+.drop-input input:focus ~ ul
+{
+    display: flex;
+    top: 125%;
+    height: 1000%;
+    z-index: 3;
+}
+
+.drop-input ul:focus-within
+{
+    display: flex;
+    top: 125%;
+    height: 1000%;
+    z-index: 3;
+}
+
+.drop-input ul:hover
+{
+    display: flex;
+    top: 125%;
+    height: 1000%;
+    z-index: 3;
+}
+
+.drop-select label:focus ~ ul
+{
+    display: flex;
+    top: 125%;
+    height: 1000%;
+    z-index: 3;
+}
+
+.drop-select ul:focus-within
+{
+    display: flex;
+    top: 125%;
+    height: 1000%;
+    z-index: 3;
+}
+
+.drop-select ul:hover
+{
+    display: flex;
+    top: 125%;
+    height: 1000%;
+    z-index: 3;
+}
+
+.centered
+{
+    position: relative;
+    top: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.genre-result:hover
+{
+    cursor: pointer;
+} 
+
+.highlight
+{
+    color: var(--neon-color) !important;
+}
+
+.headerbox
+{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75vw;
+    color: white;
+    background: rgba(255, 255, 255, 0);
+    border-bottom: solid 1px var(--neon-color);
+    width: 90%;
+    height: 7.5%;
+    position: absolute;
+    left: 5%;
+    top: 2.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.control-label
+{
+    width: auto;
+    height: 5%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7vw;
+    color: var(--neon-base);
+    position: absolute;
+}
+
+#artist-input
+{
+    width: 40%;
+    height: 10%;
+    position: absolute;
+    left: 5%;
+    top: 24%;
+}
+
+#artist-label
+{
+    left: 5%;
+    top: 16%;
+}
+
+#track-input
+{
+    width: 40%;
+    height: 10%;
+    position: absolute;
+    left: 5%;
+    top: 52%;
+}
+
+#track-label
+{
+    left: 5%;
+    top: 44%;
+}
+
+#genre-select
+{
+    width: 40%;
+    height: 10%;
+    position: absolute;
+    left: 5%;
+    top: 80%;
+}
+
+#genre-label
+{
+    left: 5%;
+    top: 72%;
+}
+
+#beacon-select
+{
+    width: 40%;
+    height: 10%;
+    position: absolute;
+    left: 55%;
+    top: 50%;
+}
+
+.btn-style
+{
+    width: 4%;
+    height: 10%;
+    font-size: 0.7vw;
+    font-family: 'JetBrains Mono', monospace;
+    border: none;
+    border-radius: 50%;
+    background-color:var(--page-base);
+    box-shadow: -3px 3px 3px rgba(0, 0, 0, 0.75),
+                3px 3px 3px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+.btn-style span
+{
+    color: var(--neon-base);
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9vw;
+    position: relative;
+    top: 4%;
+    left: 3%;
+}
+
+.btn-style span:hover
+{
+    cursor: pointer;
+    color: white;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+.re-offset
+{
+    top: 0% !important;
+    left: 0% !important;
+}
+
+#control-fire
+{
+    left: 62%;
+    top: 68%;
+}
+
+#fire-label
+{
+    left: 55%;
+    top: 70%;
+}
+
+.control-error
+{
+    width: auto;
+    height: 7%;
+    font-size: 0.7vw;
+    color: rgb(118, 22, 22);
+    background-color: var(--page-base);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: absolute;
+    left: 55%;
+    top: 85%;
+}
+
+#spotify-tag
+{
+    width: 10%;
+    height: 5%;
+    color: white;
+    font-size: 0.6vw;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 15%;
+    left: 85%;
+}
+
+#status-circle
+{
+    position: absolute;
+    top: 3.75vh;
+    left: 82.45%;
+    transition: color 0.5s linear, text-shadow 0.5s linear;
+    font-size: 0.9vw;
+    color: rgb(48, 47, 47);
+}
+
+.connected
+{
+    color: white !important;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base) !important;
+}
+
+.nonPre
+{
+    color: var(--orange-base) !important;
+    text-shadow: 1px 1px 12px var(--orange-color), -1px -1px 12px var(--orange-color),
+        1px -1px 12px var(--orange-color), -1px 1px 12px var(--orange-color),
+        0px 0px 2px var(--orange-color), 0px 0px 3px var(--orange-color), 0px 0px 4px var(--orange-color) !important;
+}
+
+.conn-error
+{
+    width: 35%;
+    height: 5%;
+    font-size: 0.7vw;
+    color: rgb(118, 22, 22);
+    background-color: var(--page-base);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: absolute;
+    left: 40%;
+    top: 82.5%;
+}
+
+#conn-label
+{
+    top: 70%;
+    left: 80%;
+}
+
+#recc-conn
+{
+    left: 91%;
+    top: 68%;
+}
+
+#track-img
+{
+    width: 30%;
+    height: 70%;
+    position: absolute;
+    top: 20%;
+    left: 6%;
+}
+
+.recc-btn-span 
+{
+    width: 5%;
+    height: 12%;
+    font-size: 0.7vw;
+    font-family: 'JetBrains Mono', monospace;
+    border: none;
+    border-radius: 50%;
+    background-color:var(--page-base);
+    box-shadow: -3px 3px 3px rgba(0, 0, 0, 0.75),
+                3px 3px 3px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+}
+
+.recc-btn-span span
+{
+    color: var(--neon-base);
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.recc-btn-span span:hover
+{
+    cursor: pointer;
+    color: white;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+.dimmed
+{
+    cursor: default !important;
+    text-shadow: none !important;
+    color: #302f2f !important;
+}
+
+#prevTrack
+{
+    position: absolute;
+    top: 56%;
+    left: 40%;
+}
+
+#togglePlay
+{
+    width: 5.5% !important;
+    height: 14% !important;
+    border-radius: 10%;
+    position: absolute;
+    top: 54.5%;
+    left: 52.5%;
+}
+
+#nextTrack
+{
+    position: absolute;
+    top: 56%;
+    left: 66%;
+}
+
+#name-wrap
+{
+    width: 30%;
+    height: 5.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: absolute;
+    left: 40%;
+    top: 30%;
+}
+
+#artist-wrap
+{
+    width: 30%;
+    height: 5.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: absolute;
+    left: 40%;
+    top: 40%;
+}
+
+.recc-tag
+{
+    width: auto;
+    height: 100%;
+    font-size: 0.7vw;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    position: relative;
+    left: 0%;
+    transition-property: left;
+    transition-timing-function: linear;
+    transition-duration: 5s;
+}
+
+.text-left
+{
+    justify-content: flex-start !important;
+}
+
+#name-tag
+{
+    color: var(--neon-color);
+}
+
+#artist-tag
+{
+    color: white;
+}
+
+#msg-header
+{
+    height: 3.5%;
+    width: 91%;
+    left: 4.5%;
+}
+
+#host-icon
+{
+    width: 5%;
+    height: 80%;
+    position: absolute;
+    left: -15%;
+    top: -2.5%;
+}
+
+.is-host
+{
+    left: 40% !important;
+}
+
+.msg-box
+{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 1%;
+}
+
+.msg
+{
+    width: auto;
+    height: auto;
+    max-width: 60%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65vw;
+    color: black;
+    border-radius: 1vw;
+    padding-left: 1vw;
+    padding-right: 1vw;
+}
+
+.outgoing-box
+{
+    justify-content: flex-end;
+}
+
+.outgoing-msg
+{
+    margin-right: 1%;
+    background-color: var(--neon-color);
+}
+
+.incoming-box
+{
+    justify-content: flex-start;
+}
+
+.incoming-msg
+{
+    margin-left: 1%;
+    background-color: white;
+}
+
+.front
+{
+    z-index: 2 !important;
+}
+
+.msg-display
+{
+    width: 90%;
+    height: 82%;
+    padding-right: 0.5vw;
+    position: absolute;
+    left: 4.5%;
+    top: 8.5%;
+    background-color: var(--neon-base);
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: scroll;
+    z-index: 1;
+}
+
+#msg-base
+{
+    justify-content: center;
+    color: #71887a;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1vw;
+}
+
+#msg-input
+{
+    width: 80%;
+    height: 5%;
+    padding-left: 1%;
+    position: absolute;
+    left: 4.5%;
+    top: 92%;
+    color: white;
+    background-color: black;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.61vw;
+    border: solid 1px var(--neon-color);
+    outline: none;
+    border-radius: 0.75vw;
+}
+
+#send-label
+{
+    width: 6%;
+    height: 5%;
+    position: absolute;
+    left: 86%;
+    top: 92%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75vw;
+    color: var(--neon-base);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+#msg-send
+{
+    width: 4%;
+    height: 7.5%;
+    left: 92%;
+    top: 91%;
+}
+
+.join-res
+{
+    width: 12%;
+    height: 5%;
+    font-size: 0.7vw;
+    color: rgb(118, 22, 22);
+    background-color: var(--page-base);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    position: absolute;
+    left: 3%;
+    top: 82.5%;
+}
+
+.room-box-title
+{
+    z-index: 1;
+}
+
+.room-box-title:hover
+{
+    cursor: pointer;
+}
+
+
+#cp-header
+{
+    width: 95%;
+    left: 2.5%;
+}
+
+#room-input-label
+{
+    width: auto;
+    height: 5%;
+    position: absolute;
+    left: 3%;
+    top: 13.5%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7vw;
+    color: var(--neon-base);
+}
+
+#room-search-input
+{
+    width: 20%;
+    height: 10%;
+    position: absolute;
+    left: 3%;
+    top: 22%;
+    color: white;
+    background-color: black;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.61vw;
+    border: solid 1px var(--neon-color);
+    outline: none;
+    padding-left: 0.5%;
+}
+
+#room-create-label
+{
+    width: auto;
+    height: 5%;
+    position: absolute;
+    left: 3%;
+    top: 37%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7vw;
+    color: var(--neon-base);
+}
+
+#room-input
+{
+    width: 20%;
+    height: 10%;
+    position: absolute;
+    left: 3%;
+    top: 45.5%;
+    color: white;
+    background-color: black;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.61vw;
+    border: solid 1px var(--neon-color);
+    outline: none;
+    padding-left: 0.5%;
+}
+
+#create-btn-label
+{
+    width: auto;
+    height: 5%;
+    position: absolute;
+    left: 15%;
+    top: 64%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65vw;
+    color: var(--neon-base);
+}
+
+#create-btn
+{
+    top: 60%;
+    left: 21%;
+    width: 2.5%;
+    height: 15%;
+}
+
+#join-btn-label
+{
+    width: auto;
+    height: 5%;
+    position: absolute;
+    left: 16%;
+    top: 82%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65vw;
+    color: var(--neon-base);
+}
+
+#join-btn
+{
+    top: 77%;
+    left: 21%;
+    width: 2.5%;
+    height: 15%;
+}
+
+#room-select
+{
+    width: 20%;
+    height: 10%;
+    position: absolute;
+    left: 30%;
+    top: 22%;
+    color: white;
+    background-color: black;
+    font-family: 'JetBrains Mono', monospace;
+    border-bottom: solid 1px var(--neon-color); 
+}
+
+#room-notif
+{
+    z-index: 3;
+    background-color: aliceblue;
+    color: black;
+    height: 50%;
+    width: 4%;
+    border-radius: 50%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1.5%;
+}
+
+.drop-room-btn
+{
+    z-index: 2;
+    width: 10%;
+    height: 100%;
+    position: absolute;
+    left: 90%;
+    background-color: black;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6vw;
+    border: none;
+}
+
+.drop-room-btn span
+{
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1vw;
+}
+
+.drop-room-btn:hover
+{
+    cursor: pointer;
+}
+
+.drop-room-btn:hover span
+{
+    color: rgb(118, 22, 22);
+}
+
+.host
+{
+    width: 10%;
+    height: 50%;
+    position: absolute;
+    left: 0.5%;
+    top: 25%;
+}
+
+.room-info
+{
+    height: 5%;
+    position: absolute;
+    top: 1%;
+    background-color: rgba(0, 0, 0, 0);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7vw;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#name-view-title
+{
+    width: 5%;
+    align-items: flex-end;
+    color: var(--neon-base);
+    left: 4.5%;
+}
+
+#name-view
+{
+    width: auto;
+    align-items: flex-start;
+    color: var(--neon-color);
+    left: 10%;
+}
+
+#room-view-title
+{
+    width: 5%;
+    align-items: flex-end;
+    color: var(--neon-base);
+    left: 69%;
+}
+
+#room-view
+{
+    width: auto;
+    color: var(--neon-color);
+    left: 74.5%;
+}
