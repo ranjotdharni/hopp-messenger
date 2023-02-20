@@ -359,12 +359,12 @@ async function authSession(token)
     return result;
 }
 
-async function makeRoom(host, id, name)
+async function makeRoom(host, id, name, private)
 {
     await pool.query
     (
-        'INSERT INTO rooms (host, room_id, name) VALUES (?, ?, ?)',
-        [host, id, name]
+        'INSERT INTO rooms (host1, room_id, name, private) VALUES (?, ?, ?, ?)',
+        [host, id, name, private]
     );
 }
 
@@ -381,12 +381,12 @@ async function removeRooms(host)
 {
     var buffer = await pool.query
     (
-        'SELECT * FROM rooms WHERE host = ?',
+        'SELECT * FROM rooms WHERE host1 = ?',
         [host]
     );
     await pool.query
     (
-        'DELETE FROM rooms WHERE host = ?',
+        'DELETE FROM rooms WHERE host1 = ?',
         [host]
     );
 
@@ -402,15 +402,265 @@ async function getRoom(id)
     );
 }
 
+async function getLiveId(u)
+{
+    return await pool.query
+    (
+        'SELECT socket1 AS socket FROM live WHERE username = ?',
+        [u]
+    );
+}
+
+async function goingLive(u, s)
+{
+    await pool.query
+    (
+        'DELETE FROM live WHERE (username = ? AND socket1 = ?)',
+        [u, s]
+    );
+
+    await pool.query
+    (
+        'INSERT INTO live (username, socket1) VALUES (?, ?)',
+        [u, s]
+    );
+
+    await pool.query
+    (
+        'SELECT socket1 AS socket from live WHERE EXISTS (SELECT CASE WHEN friend1 = ? THEN friend2 = username ELSE friend1 = username END FROM friends WHERE friend1 = ? OR friend2 = ?)',
+        [u, u, u]
+    ).then(raw => 
+    {
+        var result = raw[0];
+
+        for (let i = 0; i < result.length; i++)
+        {
+            if (result[i].socket != s)
+            {
+                io.to(result[i].socket).emit('going-live', u);
+            }
+        }
+    });
+}
+
+async function sleepUser(s)
+{
+    var user;
+
+    await pool.query
+    (
+        'SELECT username FROM live WHERE socket1 = ?',
+        [s]
+    ).then(raw =>
+    {
+        user = raw[0][0].username;
+    });
+
+    await pool.query
+    (
+        'SELECT socket1 AS socket from live WHERE EXISTS (SELECT CASE WHEN friend1 = ? THEN friend2 = username ELSE friend1 = username END FROM friends WHERE friend1 = ? OR friend2 = ?)',
+        [user, user, user]
+    ).then(final => 
+    {
+        var result = final[0];
+
+        for (let i = 0; i < result.length; i++)
+        {
+            if (result[i].socket != s)
+            {
+                io.to(result[i].socket).emit('going-sleep', user);
+            }
+        }
+    });
+
+    await pool.query
+    (
+        'DELETE FROM live WHERE socket1 = ?',
+        [s]
+    );
+}
+
+async function grabOnlineSockets(u)
+{
+    return await pool.query
+    (
+        'SELECT socket1 AS socket from live WHERE EXISTS (SELECT CASE WHEN friend1 = ? THEN friend2 = username ELSE friend1 = username END FROM friends WHERE friend1 = ? OR friend2 = ?)',
+        [u, u, u]
+    );
+}
+
+async function grabOnline(u)
+{
+    return await pool.query
+    (
+        'SELECT username, socket1 from live WHERE EXISTS (SELECT CASE WHEN friend1 = ? THEN friend2 = username ELSE friend1 = username END FROM friends WHERE friend1 = ? OR friend2 = ?)',
+        [u, u, u]
+    );
+}
+
+async function grabOffline(user)
+{
+    return await pool.query
+    (
+        `SELECT CASE WHEN friend1 = ? AND friend2 NOT IN (SELECT username FROM live WHERE username = friend2) THEN friend2 WHEN friend2 = ? AND friend1 NOT IN (SELECT username FROM live WHERE username = friend1) THEN friend1 END AS username FROM friends`,
+        [user, user]
+    );
+}
+
+async function grabPublicFriends(u)
+{
+    return await pool.query
+    (
+        `SELECT a.username AS username, b.room_id FROM live a, rooms b WHERE a.username IN (SELECT CASE WHEN friend1 = ? THEN friend2 WHEN friend2 = ? THEN friend1 END FROM friends) AND a.socket1 IN (SELECT host1 AS socket1 WHERE host1 = a.socket1 AND private = 0)`,
+        [u, u]
+    );
+}
+
+async function checkFriendRequest(u, q)
+{
+    await pool.query
+    (
+        'SELECT * FROM user_info WHERE username = ?',
+        [q]
+    ).then(tree =>
+    {
+        if (tree[0].length == 0)
+        {
+            throw new Error('User not found'); //User not found
+        }
+    });
+
+    await pool.query
+    (
+        'SELECT * FROM friends WHERE ((friend1 = ? AND friend2 = ?) OR (friend1 = ? AND friend2 = ?))',
+        [u, q, q, u]
+    ).then(raw => 
+    {
+        if (raw[0].length != 0)
+        {
+            throw new Error('Already friends');
+        }
+    });
+
+    await pool.query
+    (
+        'SELECT * FROM friend_requests WHERE (sender = ? AND going_to = ?)',
+        [u, q]
+    ).then(final => 
+    {
+        if (final[0].length != 0)
+        {
+            throw new Error('Request already sent.');
+        }
+    });
+}
+
+async function newFriendRequest(u, f)
+{
+    var response;
+
+    await pool.query
+    (
+        'INSERT INTO friend_requests (sender, going_to) VALUES (?, ?)',
+        [u, f]
+    );
+
+    await pool.query
+    (
+        'SELECT socket1 AS socket FROM live WHERE username = ?',
+        [f]
+    ).then(tree =>
+    {
+        response = tree[0];
+    });
+
+    return response;
+}
+
+async function grabFriendRequests(to)
+{
+    var res;
+
+    await pool.query
+    (
+        `SELECT sender AS username FROM friend_requests WHERE going_to = ?`,
+        [to]
+    ).then(raw =>
+    {
+        res = raw[0];
+    });
+
+    return res;
+}
+
+async function addFriend(f, t)
+{
+    var response;
+
+    await pool.query
+    (
+        'DELETE FROM friend_requests WHERE (sender = ? AND going_to = ?)',
+        [f, t]
+    );
+
+    await pool.query
+    (
+        'INSERT INTO friends (friend1, friend2) VALUES (?, ?)',
+        [f, t]
+    );
+
+    await pool.query
+    (
+        'SELECT socket1 AS socket FROM live WHERE username = ?',
+        [f]
+    ).then(tree => 
+    {
+        response = tree[0];
+    });
+
+    return response;
+}
+
+async function dropRequest(f)
+{
+    await pool.query
+    (
+        'DELETE FROM friend_requests WHERE sender = ?',
+        [f]
+    );
+}
+
+async function dropFriend(u, d)
+{
+    await pool.query
+    (
+        'DELETE FROM friends WHERE (friend1 = ? AND friend2 = ?) OR (friend1 = ? AND friend2 = ?)',
+        [u, d, d, u]
+    );
+}
+
+async function grabLiveUser(d)
+{
+    return await pool.query
+    (
+        'SELECT socket1 AS socket FROM live WHERE username = ?',
+        [d]
+    );
+}
+
 app.post('/room', async function(req, res)
 {
     var id = req.body.socket;
     var room = await getRoom(id);
 
-    if (room[0].length != 0)
+    if (room[0][0].private == 1)
+    {
+        res.send(JSON.parse('{"error":"This is a private room"}')).end();
+    }
+    else if (room[0].length != 0)
     {
         let result = room[0][0];
-        res.send(JSON.parse('{"host":"' + result.host + '", "room_id":"' + result.room_id + '", "name":"' + result.name + '"}')).end();
+        res.send(JSON.parse('{"host":"' + result.host1 + '", "room_id":"' + result.room_id + '", "name":"' + result.name + ', "private":' + result.private + '}')).end();
     }
     else
     {
@@ -423,23 +673,158 @@ app.put('/room', async function(req, res)
     var newHost = req.body.socket;
     var roomName;
     var newRoomID = uuid.v4().slice(24);
+    var live = req.body.live;
+    var forOnline;
 
     if (!req.body.name)
     {
-        roomName = req.body.user + newRoomID;
+        roomName = req.body.user + uuid.v4().slice(28);
     }
     else
     {
         roomName = req.body.name;
     }
 
-    await makeRoom(newHost, newRoomID, roomName);
+    if (live == 0)
+    {
+        forOnline = await grabOnlineSockets(req.body.user);
+
+        for (let i = 0; i < forOnline[0].length; i++)
+        {
+            io.to(forOnline[0][i].socket).emit('public-room', req.body.user, newRoomID);
+        }
+    }
+
+    await makeRoom(newHost, newRoomID, roomName, live);
     console.log('Room created with ID ' + newRoomID);
-    res.send(JSON.parse('{"message":"New Room -> Host: ' + newHost + ' Room ID: ' + newRoomID + '", "room_id":"' + newRoomID + '", "host":"' + newHost + '", "room_name":"' + roomName + '"}')).end();
+    res.send(JSON.parse('{"room_id":"' + newRoomID + '", "host":"' + newHost + '", "room_name":"' + roomName + '", "private":' + live + '}')).end();
+});
+
+app.post('/live', async function(req, res)
+{
+    var u = req.body.user;
+    var s = req.body.socket;
+
+    await goingLive(u, s);
+    let middle = await grabPublicFriends(u);
+    var requests = await grabFriendRequests(u);
+    var publics = middle[0];
+    res.send({friends: requests, publics: publics}).end();
+});
+
+app.post('/friend', async function(req, res)
+{
+    var subject = req.body.user;
+    var query = req.body.query;
+
+    try
+    {
+        await checkFriendRequest(subject, query);
+    }
+    catch (e)
+    {
+        res.send(JSON.parse('{"error":"' + e.message + '"}')).end();
+        return;
+    }
+
+    var live = await newFriendRequest(subject, query);
+
+    if (live.length != 0)
+    {
+        io.to(live[0].socket).emit('request', subject, '0');
+    }
+
+    res.send(JSON.parse('{"message":"Request Sent"}')).end();
+});
+
+app.put('/friend', async function(req, res)
+{
+    var from = req.body.sender;
+    var to = req.body.accept;
+
+    var live = await addFriend(from, to);
+
+    if (live.length != 0)
+    {
+        io.to(live[0].socket).emit('incoming-friend', to, 1);
+        res.send(JSON.parse('{"friend":"' + from + '", "live":' + 1 +'}')).end();
+    }
+    else
+    {
+        res.send(JSON.parse('{"friend":"' + from + '", "live":' + 0 +'}')).end();
+    }
+});
+
+app.delete('/friend', async function(req, res)
+{
+    var user = req.body.username;
+    var dropping = req.body.drop;
+    var notify;
+
+    await dropFriend(user, dropping);
+    notify = await grabLiveUser(dropping);
+
+    if (notify[0].length != 0)
+    {
+        io.to(notify[0][0].socket).emit('friend-drop', user);
+    }
+
+    res.end();
+});
+
+app.delete('/deadrequest', async function(req, res)
+{
+    var from = req.body.from;
+    await dropRequest(from);
+    res.end();
+});
+
+app.post('/invite', async function(req, res)
+{
+    var from = req.body.from;
+    var to = req.body.to;
+    var type = req.body.type;
+
+    let inter = await getLiveId(to);
+
+    if (inter[0].length == 0)
+    {
+        res.send(JSON.parse('{"error":"User not live."}')).end();
+    }
+    else
+    {
+        io.to(inter[0][0].socket).emit('request', from, type);
+        res.send(JSON.parse('{"message":"Invite Sent"}')).end();
+    }
+});
+
+app.put('/invite', async function(req, res)
+{
+    var room = req.body.room;
+    var branch = await getRoom(room);
+
+    if (branch[0].length == 0)
+    {
+        res.send(JSON.parse('{"error":"Bad room session."}')).end();
+    }
+    else
+    {
+        let result = branch[0][0];
+        res.send(JSON.parse('{"host":"' + result.host1 + '", "room_id":"' + result.room_id + '", "name":"' + result.name + '", "private":' + result.private + '}')).end();
+    }
+});
+
+app.post('/friendlist', async function(req, res)
+{
+    var username = req.body.username;
+    var sleptUsers = await grabOffline(username);
+    var liveUsers = await grabOnline(username);
+
+    res.send({live: liveUsers[0], sleep: sleptUsers[0]}).end();
 });
 
 io.on('connection', socket => {
-    console.log(socket.id + ' has connected...');
+    console.log(socket.id + ' has connected to server @ ' + (new Date()) + '...');
 
     socket.on('join-room', room => {
         socket.join(room);
@@ -459,6 +844,11 @@ io.on('connection', socket => {
         await removeRoom(room);
     });
 
+    socket.on('accept-invite', (newUser, room) => {
+        socket.join(room);
+        socket.to(room).emit('new-user', newUser);
+    });
+
     socket.on('disconnect', async () => {
         var response = await removeRooms(socket.id);
         var closed = response[0];
@@ -467,6 +857,7 @@ io.on('connection', socket => {
             var ROOM = closed[i].room_id;
             socket.to(ROOM).emit('leaving', ROOM);
         }
-        console.log(socket.id + ' has disconnected from server...');
+        await sleepUser(socket.id);
+        console.log(socket.id + ' has disconnected from server @ ' + (new Date()) + '...');
     });
 });

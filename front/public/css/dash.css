@@ -128,6 +128,15 @@ body
     justify-content: center;
 }
 
+.result-box img
+{
+    width: 10%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    z-index: 2;
+}
+
 .result-box p
 {
     width: 100%;
@@ -223,7 +232,7 @@ body
     display: none;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-evenly;
 }
 
 .drop-select label
@@ -398,6 +407,40 @@ body
     position: absolute;
     left: 55%;
     top: 50%;
+}
+
+.beacon-result-box
+{
+    height: 16% !important;
+    width: 95%;
+    background: linear-gradient(0deg, rgb(17, 16, 16) 0%, rgb(0, 0 ,0) 20%,rgb(29, 26, 26) 90%);
+    border-radius: 0.5vw;
+}
+
+.beacon-result-img
+{
+    width: 15% !important;
+    border-top-left-radius: 0.5vw;
+    border-bottom-left-radius: 0.5vw;
+}
+
+.beacon-result
+{
+    font-size: 0.8vw !important;
+    color: var(--neon-base) !important;
+    left: 2%;
+}
+
+.beacon-btn
+{
+    width: 12%;
+    left: 88%;
+    background-color: rgba(0,0,0,0);
+}
+
+.beacon-delete
+{
+    font-size: 1vw !important;
 }
 
 .btn-style
@@ -910,6 +953,47 @@ body
     padding-left: 0.5%;
 }
 
+.roomClass
+{
+    width: 5%;
+    height: 7.5%;
+    position: absolute;
+    top: 60%;
+    color: var(--neon-base);
+    background-color: rgb(34, 31, 31);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65vw;
+    border-radius: 0.25vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.roomClass:hover
+{
+    cursor: pointer;
+    color: black;
+    background-color: var(--neon-base);
+}
+
+.chosenClass
+{
+    cursor: default !important;
+    color: white !important;
+    background-color: var(--neon-color) !important;
+}
+
+#public
+{
+    left: 3%;
+}
+
+#private
+{
+    left: 8.5%;
+}
+
 #create-btn-label
 {
     width: auto;
@@ -955,7 +1039,7 @@ body
     width: 20%;
     height: 10%;
     position: absolute;
-    left: 30%;
+    left: 29.5%;
     top: 22%;
     color: white;
     background-color: black;
@@ -1066,4 +1150,433 @@ body
     width: auto;
     color: var(--neon-color);
     left: 74.5%;
+}
+
+#user-light
+{
+    width: 2.6%;
+    height: 15%;
+    position: absolute;
+    top: 12.5%;
+    left: 50.75%;
+    overflow: hidden;
+    font-size: 1vw;
+    background-color: black;
+    border: solid 1px var(--neon-color);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+#username-display
+{
+    width: auto;
+    max-width: 11.25%;
+    height: 10%;
+    position: absolute;
+    top: 15%;
+    left: 54%;
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85vw;
+}
+
+#inbox
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 22.875%;
+    height: 65%;
+    background-color: black;
+    border: solid 1px var(--neon-color);
+    position: absolute;
+    left: 50.5%;
+    top: 30%;
+}
+
+#user-input-label
+{
+    width: auto;
+    height: 5%;
+    position: absolute;
+    left: 74.625%;
+    top: 12.5%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7vw;
+    color: var(--neon-base);
+}
+
+#user-search-input
+{
+    width: 14%;
+    height: 10%;
+    position: absolute;
+    left: 74.375%;
+    top: 20.5%;
+    color: white;
+    background-color: black;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.61vw;
+    border: solid 1px var(--neon-color);
+    outline: none;
+    padding-left: 0.5%;
+    border-radius: 0.4vw;
+}
+
+.user-search-button
+{
+    width: 3.95%;
+    height: 8%;
+    position: absolute;
+    color: var(--neon-base);
+    background-color: rgb(34, 31, 31);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65vw;
+    outline: none;
+    border: none;
+    border-radius: 0.3vw;
+}
+
+.user-search-button:hover
+{
+    cursor: pointer;
+    color: white;
+    background-color: var(--neon-color);
+}
+
+#user-add-button
+{
+    left: 89.375%;
+    top: 21.5%;
+}
+
+#user-invite-button
+{
+    left: 93.5%;
+    top: 21.5%;
+}
+
+#friends-list
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 22.875%;
+    height: 60%;
+    background-color: black;
+    border: solid 1px var(--neon-color);
+    position: absolute;
+    left: 74.375%;
+    top: 35%;
+}
+
+.list-title-box
+{
+    width: 100%;
+    height: 12.5%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65vw;
+    color: black;
+    background-color: var(--neon-color);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+#inbox-title
+{
+
+}
+
+#friends-list
+{
+
+}
+
+#inbox-list
+{
+    width: 100%;
+    height: 87.5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: rgba(0, 0, 0, 0);
+    overflow-y: scroll;
+}
+
+#inbox-list::-webkit-scrollbar
+{
+    width: 0;
+}
+
+.inbox-box
+{
+    width: 18vw !important;
+    height: 4.25vh !important;
+    background: linear-gradient(0deg, rgb(17, 16, 16) 0%, rgb(0, 0 ,0) 20%,rgb(29, 26, 26) 90%);
+    margin-top: 0.5%;
+    border-radius: 0.5vw;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    position: relative;
+}
+
+.inbox-type
+{
+    width: 10%;
+    height: 22%;
+    position: absolute;
+    top: 40%;
+    left: 2.5%;
+    color: white;
+    font-size: 2vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.inbox-icon
+{
+    width: 4.5%;
+    height: 35%;
+    position: absolute;
+    top: 14.5%;
+    left: 15%;
+    overflow: hidden;
+    font-size: 0.5vw;
+    background-color: black;
+    border: solid 1px var(--neon-color);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base), 1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base), 0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+.first
+{
+    width: auto;
+    max-width: 45%;
+    height: 10%;
+    position: absolute;
+    top: 26.5%;
+    left: 21%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--neon-base);
+}
+
+.middle
+{
+    width: auto;
+    height: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.last
+{
+    width: auto;
+    max-width: 45%;
+    height: 10%;
+    position: absolute;
+    top: 67%;
+    left: 20%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5vw;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: rgb(93 92 92);
+}
+
+.inbox-btn
+{
+    width: 15%;
+    height: 40%;
+    position: absolute;
+    top: 28%;
+    left: 67.5%;
+    color: var(--neon-base);
+    background-color: rgb(34, 31, 31);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55vw;
+    outline: none;
+    border: none;
+    border-radius: 0.3vw;
+}
+
+.inbox-btn2
+{
+    color: rgb(188, 43, 43);
+    margin-left: 16%;
+}
+
+.inbox-btn:hover
+{
+    cursor: pointer;
+    color: white;
+    background-color: var(--neon-color);
+}
+
+.inbox-btn2:hover
+{
+    color: black;
+    background-color: rgb(111, 22, 22);
+}
+
+#friends-box-list
+{
+    width: 100%;
+    height: 87.5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: scroll;
+}
+
+#friends-box-list::-webkit-scrollbar
+{
+    width: 0;
+}
+
+.friends-box
+{
+    width: 100%;
+    height: 20%;
+    background-color: var(--page-base);
+    flex: 0 0 auto;
+    position: relative;
+}
+
+.friends-box-icon
+{
+    width: 5%;
+    height: 65%;
+    position: absolute;
+    top: 14.5%;
+    left: 2%;
+    overflow: hidden;
+    font-size: 0.5vw;
+    background-color: black;
+    border: solid 1px var(--neon-color);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base), 1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base), 0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+.friends-user
+{
+    width: auto;
+    max-width: 54%;
+    height: 35%;
+    position: absolute;
+    top: 32%;
+    left: 8.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7vw;
+    color: var(--neon-base);
+}
+
+.friends-box-status
+{
+    width: auto;
+    height: 70%;
+    position: absolute;
+    top: 18%;
+    left: 65.5%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7vw;
+    color: white;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base), 1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base), 0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
+.not-online
+{
+    text-shadow: none !important;
+    color: #302f2f !important;
+}
+
+.friends-box-btn
+{
+    width: 20%;
+    height: 70%;
+    position: absolute;
+    top: 14.5%;
+    left: 73%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    color: var(--neon-base);
+    background-color: rgb(34, 31, 31);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6vw;
+    outline: none;
+    border: none;
+    border-radius: 0.3vw;
+}
+
+.friends-box-btn:hover
+{
+    cursor: pointer;
+    color: white;
+    background-color: var(--neon-color);
+}
+
+.friends-box-delete
+{
+    width: auto;
+    height: 70%;
+    color: #302f2f;
+    position: absolute;
+    top: 18%;
+    left: 94%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9vw;
+}
+
+.friends-box-delete:hover
+{
+    cursor: pointer;
+    color: rgb(111, 22, 22);
 }

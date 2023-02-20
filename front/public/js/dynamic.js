@@ -4,11 +4,14 @@ var nonPre = false;
 var started = false;
 var resources = new Array(10);
 var searchHash = new Array(10);
-var Beacons = new Array(10);
+var Beacons = new Array(5);
 var Genres = new Array();
 var Rooms = new Array();
+var Inbox = new Array();
+var Friends = new Array();
 var nameTick;
 var roomView = -1;
+var roomClassifier = 0;
 let user = null;
 
 window.onload = async function()
@@ -50,6 +53,61 @@ document.getElementsByClassName('search-input')[0].onkeyup = searchArtists;
 document.getElementsByClassName('search-input')[0].onclick = searchArtists;
 document.getElementById('togglePlay').onclick = toggle;
 document.getElementById('create-btn').onclick = newRoom;
+document.getElementById('public').onclick = () =>
+{
+    if (roomClassifier == 0)
+    {
+        return;
+    }
+    else
+    {
+        document.getElementById('private').classList.remove('chosenClass');
+        document.getElementById('public').classList.add('chosenClass');
+        roomClassifier = 0;
+    }
+}
+document.getElementById('private').onclick = () =>
+{
+    if (roomClassifier == 1)
+    {
+        return;
+    }
+    else
+    {
+        document.getElementById('public').classList.remove('chosenClass');
+        document.getElementById('private').classList.add('chosenClass');
+        roomClassifier = 1;
+    }
+}
+document.getElementById('user-invite-button').onclick = genInvite;
+document.getElementById('user-add-button').onclick = async () =>
+{
+    const query = document.getElementById('user-search-input').value.trim();
+    document.getElementById('user-search-input').value = '';
+    let branch = await fetch(window.location.origin + '/friend',
+            { 
+                method: 'POST',
+                body: JSON.stringify(
+                    {
+                        user: user,
+                        query: query
+                    }),
+                headers:
+                {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            });
+    let tree = await branch.json();
+    
+    if (tree.error)
+    {
+        joinError(tree.error);
+    }
+    else
+    {
+        joinError(tree.message);
+    }
+}
 document.getElementById('roomslabel').onclick = () =>
 {
     if (document.getElementById('room-notif'))
@@ -141,7 +199,7 @@ document.getElementById('join-btn').onclick = async () =>
     else
     {
         socket.emit('join-room', final.room_id);
-        addRoom(final.name, final.host, final.room_id);
+        addRoom(final.name, final.host, final.room_id, final.private);
     }
 }
 
@@ -157,6 +215,34 @@ async function getUser()
     else
     {
         user = final.username;
+        document.getElementById('username-display').innerText = user;
+        let alc = await fetch(window.location.origin + '/live',
+            { 
+                method: 'POST',
+                body: JSON.stringify(
+                    {
+                        socket: socket.id,
+                        user: user
+                    }),
+                headers:
+                {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            });
+
+        let jimbean = await alc.json();
+        var fr = jimbean.friends;
+        var pr = jimbean.publics;
+
+        for (let i = 0; i < fr.length; i++)
+        {
+            newInboxRequest(fr[i].username, '0');
+        }
+
+        for (let j = 0; j < pr.length; j++)
+        {
+            publicRoom(pr[j].username, pr[j].room_id);
+        }
     }
 }
 
@@ -195,6 +281,41 @@ async function instateSession()
     }
 }
 
+async function parseFriends()
+{
+    let branch = await fetch(window.location.origin + '/friendlist',
+        { 
+            method: 'POST',
+            body: JSON.stringify(
+                {
+                    username: user
+                }),
+            headers:
+            {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+        });
+    let tree = await branch.json();
+    let online = tree.live;
+    let offline = tree.sleep;
+    console.log(tree);
+    
+    for (let x = 0; x < online.length; x++)
+    {
+        if (online[x].username != user && online[x].username != null)
+        {
+            newFriend(online[x].username, 1);
+        }
+    }
+    for (let z = 0; z < offline.length; z++)
+    {
+        if (offline[z].username != user && offline[z].username != null)
+        {
+            newFriend(offline[z].username, 0);
+        }
+    }
+}
+
 async function searchArtists()
 {
     await instateSession();
@@ -215,16 +336,19 @@ async function searchArtists()
     var middle = await buffer.json();
     let result = middle.artists.items;
     let boxes = document.getElementsByClassName('artist-result');
+    let images = document.getElementsByClassName('artist-result-img');
 
     for (var i = 0; i < boxes.length; i++)
     {
         searchHash[i].Sid = (result[i].id);
         searchHash[i].Sname = (result[i].name);
         searchHash[i].Stype = (result[i].type);
+        searchHash[i].Simg = (result[i].images[2].url);
+        images[i].src = searchHash[i].Simg;
 
-        if (result[i].name.length > 26)
+        if (result[i].name.length > 21)
         {
-            boxes[i].innerText = ((result[i].name.slice(0, 23) + '...') || '');
+            boxes[i].innerText = ((result[i].name.slice(0, 18) + '...') || '');
         }
         else
         {
@@ -255,16 +379,19 @@ async function searchTracks()
     var middle = await buffer.json();
     let result = middle.tracks.items;
     let boxes = document.getElementsByClassName('track-result');
+    let images = document.getElementsByClassName('track-result-img');
 
     for (var i = 0; i < boxes.length; i++)
     {
         searchHash[i].Sid = (result[i].id);
         searchHash[i].Sname = (result[i].name);
         searchHash[i].Stype = (result[i].type);
+        searchHash[i].Simg = (result[i].album.images[2].url);
+        images[i].src = searchHash[i].Simg;
 
-        if(result[i].name.length > 26)
+        if(result[i].name.length > 21)
         {
-            boxes[i].innerText = ((result[i].name.slice(0, 23) + '...') || '');
+            boxes[i].innerText = ((result[i].name.slice(0, 18) + '...') || '');
         }
         else
         {
@@ -277,6 +404,7 @@ async function newSesh()
 {
     await getUser();
     await instateSession();
+    await parseFriends();
 
     if (sessionStorage.getItem('token') && !(nonPre))
     {
@@ -303,8 +431,12 @@ async function freshHarvest()
 {
     for (var j = 0; j < 10; j++)
     {
-        searchHash[j] = {Sname: '', Sid: '', Stype: ''};
-        Beacons[j] = {name: '', id: '', type: ''};
+        searchHash[j] = {Sname: '', Sid: '', Stype: '', Simg: ''};
+
+        if (j < Beacons.length)
+        {
+            Beacons[j] = {name: '', id: '', type: '', img: ''};
+        }
     }
 
     for (var i = 0; i < resources.length; i++)
@@ -346,6 +478,7 @@ function addBeacon(arg)
                 Beacons[i].id = searchHash[arg].Sid;
                 Beacons[i].name = searchHash[arg].Sname;
                 Beacons[i].type = searchHash[arg].Stype;
+                Beacons[i].img = searchHash[arg].Simg;
                 instateBeacons();
                 return;
             }
@@ -364,7 +497,7 @@ function dropBeacon(arg)
     else
     {
         Beacons.splice(arg, 1);
-        Beacons.push({name: '', id: '', type: ''});
+        Beacons.push({name: '', id: '', type: '', img: ''});
     }
 
     instateBeacons();
@@ -387,17 +520,29 @@ function cycle(target, arg)
 function instateBeacons()
 {
     var middle = document.getElementsByClassName('beacon-result');
+    var branch = document.getElementsByClassName('beacon-result-img');
 
     for (var i = 0; i < middle.length; i++)
     {
         let buffer = Beacons[i].name;
-        if (buffer.length > 26)
+        let tree = Beacons[i].img;
+
+        if (buffer.length > 18)
         {
-            middle[i].innerText = buffer.slice(0, 23) + '...';
+            middle[i].innerText = buffer.slice(0, 15) + '...';
         }
         else
         {
             middle[i].innerText = buffer;
+        }
+
+        if (tree == '')
+        {
+            branch[i].src = '/svg/dna.svg';
+        }
+        else
+        {
+            branch[i].src = tree;
         }
     }
 }
@@ -811,7 +956,7 @@ function newJoinNotif()
 function dropRoom(roombox, name)
 {
     var targetIndex = Rooms.map(object => object.name).indexOf(name);
-    if (Rooms[targetIndex].host ==  socket.id)
+    if (Rooms[targetIndex].host == socket.id)
     {
         socket.emit('drop-room', Rooms[targetIndex].room);
     }
@@ -856,7 +1001,16 @@ function instateRoom(tar)
     roomView = x;
 
     document.getElementById('name-view').innerText = Rooms[x].name;
-    document.getElementById('room-view').innerText = Rooms[x].room;
+
+    if (Rooms[x].private != 1)
+    {
+        document.getElementById('room-view').innerText = Rooms[x].room;
+    }
+    else
+    {
+        document.getElementById('room-view').innerText = '';
+    }
+    
     if (socket.id == Rooms[x].host)
     {
         document.getElementById('host-icon').classList.remove('is-host');
@@ -903,26 +1057,22 @@ function addRoomBox(arg, host)
         crown.src = '/svg/crown.svg';
         inQuestion.appendChild(crown);
     }
-    //inQuestion.innerHTML = '<p class = "room-box-title" onclick="instateRoom(this)">'+ arg +'</p>';
+
     document.getElementById('rooms-dropbox').appendChild(inQuestion);
     theBtn.addEventListener('click', function() {
         dropRoom(inQuestion, arg);
     });
 }
 
-function addRoom(name, host, room)
+function addRoom(name, host, room, private)
 {
-    Rooms.push({name: name, host: host, room: room});
+    Rooms.push({name: name, host: host, room: room, private: private});
     roomView = Rooms.length - 1;
-    var isHost;
+    var isHost = false;
 
     if (host == socket.id)
     {
         isHost = true;
-    }
-    else
-    {
-        isHost = false;
     }
 
     var fresh = document.createElement('div');
@@ -970,7 +1120,8 @@ async function newRoom()
                     {
                         socket: socket.id,
                         name: roomName,
-                        user: user
+                        user: user,
+                        live: roomClassifier
                     }),
                 headers:
                 {
@@ -981,5 +1132,286 @@ async function newRoom()
     roomName = final.room_name;
 
     socket.emit('join-room', final.room_id);
-    addRoom(roomName, final.host, final.room_id);
+    addRoom(roomName, final.host, final.room_id, final.private);
+}
+
+function newInboxRequest(from, type)
+{
+    if (type == '0')
+    {
+        var newBox = document.createElement('div');
+        newBox.classList.add('inbox-box');
+        newBox.innerHTML = '<span class="material-symbols-outlined inbox-type">handshake</span><span class="material-symbols-outlined inbox-icon">person</span><span class = "first">'
+                            + from + `</span><span class = "last">Sent you a friend request!</span><button class = "inbox-btn1 inbox-btn" onclick="acceptRequest('`
+                            + from + `', '` + type + `')">Accept</button><button class = "inbox-btn2 inbox-btn" onclick="declineRequest('`
+                            + from + `', '` + type + `')">Decline</button>`;
+    
+        document.getElementById('inbox-list').appendChild(newBox);
+        Inbox.push({from: from, type: type, node: newBox});
+    }
+    else
+    {
+        if (Inbox.map(object => object.type).indexOf(type) != -1)
+        {
+            return;
+        }
+
+        var newBox = document.createElement('div');
+        newBox.classList.add('inbox-box');
+        newBox.innerHTML = '<span class="material-symbols-outlined inbox-type">handshake</span><span class="material-symbols-outlined inbox-icon">person</span><span class = "first">'
+                            + from + `</span><span class = "last">Sent you a room invite!</span><button class = "inbox-btn1 inbox-btn" onclick="acceptRequest('`
+                            + from + `', '` + type + `')">Accept</button><button class = "inbox-btn2 inbox-btn" onclick="declineRequest('`
+                            + from + `', '` + type + `')">Decline</button>`;
+    
+        document.getElementById('inbox-list').appendChild(newBox);
+        Inbox.push({from: from, type: type, node: newBox});
+        console.log(Inbox);
+    }
+}
+
+function publicRoom(from, type)
+{
+    if (Inbox.map(object => object.type).indexOf(type) != -1)
+    {
+        return;
+    }
+
+    var newBox = document.createElement('div');
+    newBox.classList.add('inbox-box');
+    newBox.innerHTML = '<span class="material-symbols-outlined inbox-type">handshake</span><span class="material-symbols-outlined inbox-icon">person</span><span class = "first">'
+                        + from + `</span><span class = "last">Started a public room!</span><button class = "inbox-btn1 inbox-btn" onclick="acceptRequest('`
+                        + from + `', '` + type + `')">Join</button><button class = "inbox-btn2 inbox-btn" onclick="declineRequest('`
+                        + from + `', '` + type + `')">Clear</button>`;
+    
+    document.getElementById('inbox-list').appendChild(newBox);
+    Inbox.push({from: from, type: type, node: newBox});
+    console.log(Inbox);
+}
+
+function newFriend(friend, live)
+{
+    var online = '';
+    if (live != 1)
+    {
+        online = ' not-online';
+    }
+
+    var friendBox = document.createElement('div');
+    friendBox.classList.add('friends-box');
+    friendBox.innerHTML = '<span class="material-symbols-outlined friends-box-icon">person</span><span class = "friends-user">' 
+                           + friend + '</span><span class="material-symbols-outlined friends-box-status'
+                           + online + `">vital_signs</span><button class = "friends-box-btn" onclick="fireInvite('`
+                           + friend + `')">Invite</button><span class="material-symbols-outlined friends-box-delete" onclick="dropFriend('`
+                           + friend + `')">close</span>`;
+    document.getElementById('friends-box-list').appendChild(friendBox);
+    Friends.push({friend: friend, live: live, node: friendBox});
+}
+
+async function acceptRequest(w, x)
+{
+    if (x == '0')
+    {
+        for (let c = 0; c < Inbox.length; c++)
+        {
+            if ((Inbox[c].from == w) && (Inbox[c].type == x))
+            {
+                x = c;
+                break;
+            }
+        }
+    }
+    else
+    {
+        x = Inbox.map(object => object.type).indexOf(x);
+    }
+
+    if (Inbox[x].type == '0')
+    {
+        let branch = await fetch(window.location.origin + '/friend',
+        { 
+            method: 'PUT',
+            body: JSON.stringify(
+                {
+                    sender: Inbox[x].from,
+                    accept: user
+                }),
+            headers:
+            {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+        });
+        let tree = await branch.json(); 
+
+        Inbox[x].node.remove();
+        Inbox.splice(x, 1);
+        newFriend(tree.friend, tree.live);
+        joinError('Request from ' + tree.friend + ' accepted.');
+    }
+    else
+    {
+        if (Rooms.length > 9)
+        {
+            joinError('Room List at capacity.');
+            Inbox[x].node.remove();
+            Inbox.splice(x, 1);
+            console.log(Inbox);
+            return;
+        }
+
+        let branch = await fetch(window.location.origin + '/invite',
+        { 
+            method: 'PUT',
+            body: JSON.stringify(
+                {
+                    room: Inbox[x].type
+                }),
+            headers:
+            {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+        });
+        let tree = await branch.json();
+
+        Inbox[x].node.remove();
+        Inbox.splice(x, 1);
+        if (tree.error)
+        {
+            joinError(tree.error);
+        }
+        else
+        {
+            socket.emit('accept-invite', user, tree.room_id);
+            addRoom(tree.name, tree.host, tree.room_id, tree.private);
+            joinError(tree.message);
+        }
+    }
+
+    console.log(Inbox);
+}
+
+async function declineRequest(w, x)
+{
+    if (x == '0')
+    {
+        for (let c = 0; c < Inbox.length; c++)
+        {
+            if ((Inbox[c].from == w) && (Inbox[c].type == x))
+            {
+                x = c;
+                break;
+            }
+        }
+    }
+    else
+    {
+        x = Inbox.map(object => object.type).indexOf(x);
+    }
+    console.log(Inbox);
+    console.log('At Index: ' + x)
+    if (Inbox[x].type == '0')
+    {
+        await fetch(window.location.origin + '/deadrequest',
+        { 
+            method: 'DELETE',
+            body: JSON.stringify(
+                {
+                    from: Inbox[x].from
+                }),
+            headers:
+            {
+                'Content-type': 'application/json; charset=UTF-8',
+            }
+        });
+    }
+
+    Inbox[x].node.remove();
+    Inbox.splice(x, 1);
+    console.log(Inbox);
+}
+
+async function genInvite()
+{
+    const query = document.getElementById('user-search-input').value.trim();
+    document.getElementById('user-search-input').value = '';
+    let branch = await fetch(window.location.origin + '/invite',
+    { 
+        method: 'POST',
+        body: JSON.stringify(
+            {
+                from: user,
+                to: query,
+                type: Rooms[roomView].room
+            }),
+        headers:
+        {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    });
+    let tree = await branch.json();
+
+    if (tree.error)
+    {
+        joinError(tree.error);
+    }
+    else
+    {
+        joinError(tree.message);
+    }
+}
+
+async function fireInvite(x)
+{
+    x = Friends.map(object => object.friend).indexOf(x)
+
+    if (Friends[x].live == 0)
+    {
+        joinError('User not live.');
+    }
+    else
+    {
+        let branch = await fetch(window.location.origin + '/invite',
+            { 
+                method: 'POST',
+                body: JSON.stringify(
+                    {
+                        from: user,
+                        to: Friends[x].friend,
+                        type: Rooms[roomView].room
+                    }),
+                headers:
+                {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            });
+        let tree = await branch.json();
+
+        if (tree.error)
+        {
+            joinError(tree.error);
+        }
+        else
+        {
+            joinError(tree.message);
+        }
+    }
+}
+
+async function dropFriend(x)
+{
+    x = Friends.map(object => object.friend).indexOf(x);
+    await fetch(window.location.origin + '/friend',
+    { 
+        method: 'DELETE',
+        body: JSON.stringify(
+            {
+                username: user,
+                drop: Friends[x].friend
+            }),
+        headers:
+        {
+            'Content-type': 'application/json; charset=UTF-8',
+        }
+    });
+    Friends[x].node.remove();
+    Friends.splice(x, 1);
 }
