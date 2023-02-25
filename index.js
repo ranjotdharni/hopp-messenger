@@ -402,6 +402,15 @@ async function getRoom(id)
     );
 }
 
+async function getLiveUser(s)
+{
+    return await pool.query
+    (
+        'SELECT username FROM live WHERE socket1 = ?',
+        [s]
+    );
+}
+
 async function getLiveId(u)
 {
     return await pool.query
@@ -484,7 +493,7 @@ async function grabOnlineSockets(u)
 {
     return await pool.query
     (
-        'SELECT socket1 AS socket from live WHERE EXISTS (SELECT CASE WHEN friend1 = ? THEN friend2 = username ELSE friend1 = username END FROM friends WHERE friend1 = ? OR friend2 = ?)',
+        'SELECT socket1 AS socket from live WHERE username IN (SELECT CASE WHEN friend1 = ? THEN friend2 ELSE friend1 END FROM friends WHERE friend1 = ? OR friend2 = ?)',
         [u, u, u]
     );
 }
@@ -493,7 +502,7 @@ async function grabOnline(u)
 {
     return await pool.query
     (
-        'SELECT username, socket1 from live WHERE EXISTS (SELECT CASE WHEN friend1 = ? THEN friend2 = username ELSE friend1 = username END FROM friends WHERE friend1 = ? OR friend2 = ?)',
+        'SELECT username, socket1 from live WHERE username IN (SELECT CASE WHEN friend1 = ? THEN friend2 ELSE friend1 END FROM friends WHERE friend1 = ? OR friend2 = ?)',
         [u, u, u]
     );
 }
@@ -514,6 +523,54 @@ async function grabPublicFriends(u)
         `SELECT a.username AS username, b.room_id FROM live a, rooms b WHERE a.username IN (SELECT CASE WHEN friend1 = ? THEN friend2 WHEN friend2 = ? THEN friend1 END FROM friends) AND a.socket1 IN (SELECT host1 AS socket1 WHERE host1 = a.socket1 AND private = 0)`,
         [u, u]
     );
+}
+
+async function newUserIn(u, s)
+{
+    return await pool.query
+    (
+        'INSERT INTO user_in (username, socket1) VALUES (?, ?)',
+        [u, s]
+    );
+}
+
+async function dropSingleIn(u, s)
+{
+    return await pool.query
+    (
+        'DELETE FROM user_in WHERE (username = ? AND socket1 = ?)',
+        [u, s]
+    );
+}
+
+async function dropAllIn(s)
+{
+    return await pool.query
+    (
+        'DELETE FROM user_in WHERE socket1 = ?',
+        [s]
+    );
+}
+
+async function grabDropIn(u)
+{
+    var response;
+
+    await pool.query
+    (
+        'SELECT socket1 AS socket FROM user_in WHERE username = ?',
+        [u]
+    ).then(raw => {
+        response = raw[0];
+    });
+
+    await pool.query
+    (
+        'DELETE FROM user_in WHERE username = ?',
+        [u]
+    );
+
+    return response;
 }
 
 async function checkFriendRequest(u, q)
@@ -660,7 +717,7 @@ app.post('/room', async function(req, res)
     else if (room[0].length != 0)
     {
         let result = room[0][0];
-        res.send(JSON.parse('{"host":"' + result.host1 + '", "room_id":"' + result.room_id + '", "name":"' + result.name + ', "private":' + result.private + '}')).end();
+        res.send(JSON.parse('{"host":"' + result.host1 + '", "room_id":"' + result.room_id + '", "name":"' + result.name + '", "private":' + result.private + '}')).end();
     }
     else
     {
@@ -826,30 +883,46 @@ app.post('/friendlist', async function(req, res)
 io.on('connection', socket => {
     console.log(socket.id + ' has connected to server @ ' + (new Date()) + '...');
 
-    socket.on('join-room', room => {
+    socket.on('joining', async (room, user) => {
         socket.join(room);
+        await newUserIn(user, room);
+        socket.to(room).emit('new-user', user, room);
     });
 
-    socket.on('new-message', (message, room) => {
-        socket.broadcast.to(room).emit('receive-message', message, room);
+    socket.on('new-message', (message, room, u) => {
+        socket.broadcast.to(room).emit('receive-message', message, room, u);
     });
 
-    socket.on('leave-room', room => {
+    socket.on('exit-room', async (room, u) => {
         socket.leave(room);
+        await dropSingleIn(u, room);
+        socket.to(room).emit('ex-user', u, room);
     });
 
     socket.on('drop-room', async (room) => {
         socket.broadcast.to(room).emit('leaving', room);
         socket.leave(room);
+        await dropAllIn(room);
         await removeRoom(room);
     });
 
-    socket.on('accept-invite', (newUser, room) => {
+    socket.on('accept-invite', async (newUser, room) => {
         socket.join(room);
-        socket.to(room).emit('new-user', newUser);
+        await newUserIn(newUser, room);
+        socket.to(room).emit('new-user', newUser, room);
     });
 
     socket.on('disconnect', async () => {
+        let middle = await getLiveUser(socket.id);
+        var user = middle[0][0].username;
+        var notify = await grabDropIn(user);
+
+        for (i = 0; i < notify.length; i++)
+        {
+            var client = notify[i].socket;
+            io.to(client).emit('ex-user', user, client);
+        }
+
         var response = await removeRooms(socket.id);
         var closed = response[0];
         for (var i = 0; i < closed.length; i++)

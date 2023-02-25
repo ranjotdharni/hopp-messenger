@@ -198,7 +198,7 @@ document.getElementById('join-btn').onclick = async () =>
     }
     else
     {
-        socket.emit('join-room', final.room_id);
+        socket.emit('joining', final.room_id, user);
         addRoom(final.name, final.host, final.room_id, final.private);
     }
 }
@@ -883,28 +883,71 @@ async function prev()
     }
 }
 
-function newMessage(arg, incoming, targ)
+function newMessage(arg, incoming, targ, from)
 {
     let messageBox = document.createElement('div');
+    let senderBox = document.createElement('div');
     let message = document.createElement('p');
+    let sender = document.createElement('p');
 
     messageBox.classList.add('msg-box');
+    messageBox.classList.add('msg-margin');
+    senderBox.classList.add('msg-box');
     message.classList.add('msg');
+    sender.classList.add('msg-sender');
 
     if (incoming)
     {
         messageBox.classList.add('incoming-box');
+        senderBox.classList.add('incoming-box');
+        sender.classList.add('msg-flip-left');
         message.classList.add('incoming-msg');
     }
     else
     {
         messageBox.classList.add('outgoing-box');
+        senderBox.classList.add('outgoing-box');
         message.classList.add('outgoing-msg');
     }
 
+    sender.innerText = from + ' ' + new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
     message.innerText = arg;
+    senderBox.appendChild(sender);
     messageBox.appendChild(message);
+    document.getElementsByClassName('msg-display')[targ + 1].appendChild(senderBox);
     document.getElementsByClassName('msg-display')[targ + 1].appendChild(messageBox);
+}
+
+function notifMessage(from, incoming, targ, action)
+{
+    let senderBox = document.createElement('div');
+    let sender = document.createElement('p');
+    senderBox.classList.add('msg-box');
+    sender.classList.add('msg-sender');
+
+    if (incoming)
+    {
+        senderBox.classList.add('incoming-box');
+        sender.classList.add('msg-flip-left');
+    }
+    else
+    {
+        senderBox.classList.add('outgoing-box');
+    }
+
+    if (action == 1)
+    {
+        sender.classList.add('joined');
+        sender.innerText = from + ' joined @ ' + new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    }
+    else
+    {
+        sender.classList.add('left');
+        sender.innerText = from + ' left @ ' + new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    }
+    
+    senderBox.appendChild(sender);
+    document.getElementsByClassName('msg-display')[targ + 1].appendChild(senderBox);
 }
 
 function joinError(message)
@@ -962,7 +1005,7 @@ function dropRoom(roombox, name)
     }
     else
     {
-        socket.emit('leave-room', Rooms[targetIndex].room);
+        socket.emit('exit-room', Rooms[targetIndex].room, user);
     }
     
     roombox.remove();
@@ -1131,7 +1174,7 @@ async function newRoom()
     var final = await response.json();
     roomName = final.room_name;
 
-    socket.emit('join-room', final.room_id);
+    socket.emit('joining', final.room_id, user);
     addRoom(roomName, final.host, final.room_id, final.private);
 }
 
@@ -1158,14 +1201,13 @@ function newInboxRequest(from, type)
 
         var newBox = document.createElement('div');
         newBox.classList.add('inbox-box');
-        newBox.innerHTML = '<span class="material-symbols-outlined inbox-type">handshake</span><span class="material-symbols-outlined inbox-icon">person</span><span class = "first">'
+        newBox.innerHTML = '<span class="material-symbols-outlined inbox-type">supervised_user_circle</span><span class="material-symbols-outlined inbox-icon">person</span><span class = "first">'
                             + from + `</span><span class = "last">Sent you a room invite!</span><button class = "inbox-btn1 inbox-btn" onclick="acceptRequest('`
                             + from + `', '` + type + `')">Accept</button><button class = "inbox-btn2 inbox-btn" onclick="declineRequest('`
                             + from + `', '` + type + `')">Decline</button>`;
     
         document.getElementById('inbox-list').appendChild(newBox);
         Inbox.push({from: from, type: type, node: newBox});
-        console.log(Inbox);
     }
 }
 
@@ -1178,7 +1220,7 @@ function publicRoom(from, type)
 
     var newBox = document.createElement('div');
     newBox.classList.add('inbox-box');
-    newBox.innerHTML = '<span class="material-symbols-outlined inbox-type">handshake</span><span class="material-symbols-outlined inbox-icon">person</span><span class = "first">'
+    newBox.innerHTML = '<span class="material-symbols-outlined inbox-type">add_home</span><span class="material-symbols-outlined inbox-icon">person</span><span class = "first">'
                         + from + `</span><span class = "last">Started a public room!</span><button class = "inbox-btn1 inbox-btn" onclick="acceptRequest('`
                         + from + `', '` + type + `')">Join</button><button class = "inbox-btn2 inbox-btn" onclick="declineRequest('`
                         + from + `', '` + type + `')">Clear</button>`;

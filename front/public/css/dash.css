@@ -747,6 +747,36 @@ body
     left: 40% !important;
 }
 
+.joined
+{
+    color: #35820d !important;
+}
+
+.left
+{
+    color: rgb(184, 35, 35) !important;
+}
+
+.msg-sender
+{
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5vw;
+    color: rgb(27, 26, 26);
+    position: relative;
+    left: -2%;
+}
+
+.msg-flip-left
+{
+    left: 2% !important;
+}
+
 .msg-box
 {
     width: 100%;
@@ -754,7 +784,7 @@ body
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin-top: 1%;
+    margin-top: 1.5%;
 }
 
 .msg
@@ -768,6 +798,11 @@ body
     border-radius: 1vw;
     padding-left: 1vw;
     padding-right: 1vw;
+}
+
+.msg-margin
+{
+    margin-top: 0.25% !important;
 }
 
 .outgoing-box
@@ -1097,13 +1132,18 @@ body
     color: rgb(118, 22, 22);
 }
 
+#rooms-dropbox
+{
+    justify-content: flex-start !important;
+}
+
 .host
 {
-    width: 10%;
-    height: 50%;
-    position: absolute;
-    left: 0.5%;
-    top: 25%;
+    width: 10% !important;
+    height: 50% !important;
+    position: absolute !important;
+    left: 0.5% !important;
+    top: 25% !important;
 }
 
 .room-info

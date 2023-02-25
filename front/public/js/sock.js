@@ -1,5 +1,18 @@
 var socket = io();
-
+document.getElementById('msg-input').onkeyup = (event) =>
+{
+    if (event.key === 'Enter')
+    {
+        var msg = document.getElementById('msg-input').value.trim();
+        document.getElementById('msg-input').value = '';
+    
+        if ((msg.length != 0) && (roomView > -1))
+        {
+            newMessage(msg, false, roomView, user);
+            socket.emit('new-message', msg, Rooms[roomView].room, user);
+        }
+    }
+}
 document.getElementById('msg-send').onclick = () =>
 {
     var msg = document.getElementById('msg-input').value.trim();
@@ -7,8 +20,8 @@ document.getElementById('msg-send').onclick = () =>
 
     if ((msg.length != 0) && (roomView > -1))
     {
-        newMessage(msg, false, roomView);
-        socket.emit('new-message', msg, Rooms[roomView].room);
+        newMessage(msg, false, roomView, user);
+        socket.emit('new-message', msg, Rooms[roomView].room, user);
     }
     else
     {
@@ -26,9 +39,9 @@ socket.on('connect', () => {
     console.log(socket.id + ' is live...');
 });
 
-socket.on('receive-message', (message, room) => {
+socket.on('receive-message', (message, room, u) => {
     var tar = Rooms.map(object => object.room).indexOf(room);
-    newMessage(message, true, tar);
+    newMessage(message, true, tar, u);
 
     if (tar != roomView)
     {
@@ -49,14 +62,16 @@ socket.on('incoming-friend', (friend, live) => {
     newFriend(friend, live);
 });
 
-socket.on('new-user', newUser => {
+socket.on('new-user', (newUser, room) => {
+    var tar = Rooms.map(object => object.room).indexOf(room);
+
     if (newUser != user)
     {
-        joinError(newUser + ' accepted your invite.');
+        notifMessage(newUser, true, tar, 1);
     }
     else
     {
-        joinError('Room Joined');
+        notifMessage(newUser, false, tar, 1);
     }
 });
 
@@ -85,4 +100,9 @@ socket.on('friend-drop', drop =>
     var x = Friends.map(object => object.friend).indexOf(drop);
     Friends[x].node.remove();
     Friends.splice(x, 1);
+});
+
+socket.on('ex-user', (exUser, room) => {
+    var tar = Rooms.map(object => object.room).indexOf(room);
+    notifMessage(exUser, true, tar, 0);
 });
