@@ -424,7 +424,7 @@ async function goingLive(u, s)
 {
     await pool.query
     (
-        'DELETE FROM live WHERE (username = ? AND socket1 = ?)',
+        'DELETE FROM live WHERE (username = ? OR socket1 = ?)',
         [u, s]
     );
 
