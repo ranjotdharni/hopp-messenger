@@ -52,16 +52,10 @@ body
 
 #dynamic-bg-container
 {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: space-evenly;
-    justify-content: space-evenly;
+    width: 100vw;
+    height: 100vh;
     z-index: 1;
-    background-image: url('/background/sunsetDash.jpg');
-    background-size: 100vw 100vh;
+    object-fit: cover;
 }
 
 #dash-hud
