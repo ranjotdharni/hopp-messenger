@@ -60,7 +60,8 @@ body
     align-items: space-evenly;
     justify-content: space-evenly;
     z-index: 1;
-    background-image: url('/svg/background.svg');
+    background-image: url('/background/sunsetDash.jpg');
+    background-size: 100vw 100vh;
 }
 
 #dash-hud
@@ -107,8 +108,10 @@ body
 {
     box-shadow: -0.25vw 0.75vh 5px rgba(0, 0, 0, 0.75),
                 0.2vw -0.6vh 5px rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(0px);
-    background-color: var(--page-base) !important;
+    /*background-color: var(--page-base) !important;*/
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .panel:focus-within
@@ -472,10 +475,10 @@ body
     font-size: 0.9vw;
     position: relative;
     top: 4%;
-    left: 3%;
+    left: 1%;
 }
 
-.btn-style span:hover
+.btn-style:hover span
 {
     cursor: pointer;
     color: white;
@@ -484,10 +487,19 @@ body
         0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
 }
 
+.btn-style:hover label
+{
+    cursor: pointer;
+    color: white !important;
+    text-shadow: 1px 1px 12px var(--neon-base), -1px -1px 12px var(--neon-base),
+        1px -1px 12px var(--neon-base), -1px 1px 12px var(--neon-base),
+        0px 0px 2px var(--neon-base), 0px 0px 3px var(--neon-base), 0px 0px 4px var(--neon-base);
+}
+
 .re-offset
 {
     top: 0% !important;
-    left: 0% !important;
+    left: -2% !important;
 }
 
 #control-fire
@@ -872,7 +884,7 @@ body
     font-size: 0.61vw;
     border: solid 1px var(--neon-color);
     outline: none;
-    border-radius: 0.75vw;
+    border-radius: 0.25vw;
 }
 
 #send-label
@@ -880,8 +892,8 @@ body
     width: 6%;
     height: 5%;
     position: absolute;
-    left: 86%;
-    top: 92%;
+    left: 38%;
+    top: 49%;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.75vw;
     color: var(--neon-base);
@@ -893,10 +905,17 @@ body
 
 #msg-send
 {
-    width: 4%;
-    height: 7.5%;
-    left: 92%;
-    top: 91%;
+    width: 9.1%;
+    height: 5%;
+    left: 86.5%;
+    top: 92.1%; /*48.6vh*/
+    border-radius: 0.25vw;
+}
+
+#msg-send span
+{
+    top: 3% !important;
+    left: 24% !important;
 }
 
 .join-res
@@ -1198,12 +1217,12 @@ body
     height: 15%;
     position: absolute;
     top: 12.5%;
-    left: 50.75%;
+    left: 50.5%;
     overflow: hidden;
     font-size: 1vw;
     background-color: black;
     border: solid 1px var(--neon-color);
-    border-radius: 50%;
+    border-radius: 0.35vw;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1220,8 +1239,8 @@ body
     max-width: 11.25%;
     height: 10%;
     position: absolute;
-    top: 15%;
-    left: 54%;
+    top: 15.5%;
+    left: 53.75%;
     color: white;
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.85vw;
@@ -1619,4 +1638,12 @@ body
 {
     cursor: pointer;
     color: rgb(111, 22, 22);
+}
+
+@media (max-width: 1536px)
+{
+    #msg-send
+    {
+        top: 48.6vh;
+    }
 }
