@@ -4,7 +4,7 @@ var nonPre = false;
 var started = false;
 var resources = new Array(10);
 var searchHash = new Array(10);
-var Beacons = new Array(5);
+var Beacons = new Array(4);
 var Genres = new Array();
 var Rooms = new Array();
 var Inbox = new Array();
@@ -201,6 +201,27 @@ document.getElementById('join-btn').onclick = async () =>
         socket.emit('joining', final.room_id, user);
         addRoom(final.name, final.host, final.room_id, final.private);
     }
+}
+
+document.getElementById('logout-button').onclick = async () =>
+{
+    document.cookie = 'session_token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    sessionStorage.clear();
+
+    await fetch(window.location.origin + '/logout',
+            { 
+                method: 'PUT',
+                body: JSON.stringify(
+                    {
+                        user: user
+                    }),
+                headers:
+                {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            });
+
+    location.href = window.location.origin + '/';
 }
 
 async function getUser()
@@ -554,10 +575,12 @@ function errBeacon(arg)
     hubris.classList.add('control-error');
     document.getElementById('dash-control').appendChild(hubris);
 
-    setTimeout(function ()
-    {
-        hubris.remove();
+    setTimeout(function() {
+        hubris.classList.add('fade-error');
     }, 7000);
+    setTimeout(function () {
+        hubris.remove();
+    }, 8000);
 }
 
 async function fireBeacons()
@@ -957,8 +980,11 @@ function joinError(message)
     err.innerText = message;
     document.getElementById('dash-tethers').appendChild(err);
     setTimeout(function() {
-        document.getElementsByClassName('join-res')[0].remove();
+        document.getElementsByClassName('join-res')[0].classList.add('fade-error');
     }, 7000);
+    setTimeout(function() {
+        document.getElementsByClassName('join-res')[0].remove();
+    }, 8000);
     return err;
 }
 
@@ -969,8 +995,11 @@ function connError(message)
     err.innerText = message;
     document.getElementById('dash-recc').appendChild(err);
     setTimeout(function() {
-        document.getElementsByClassName('conn-error')[0].remove();
+        document.getElementsByClassName('conn-error')[0].classList.add('fade-error');
     }, 7000);
+    setTimeout(function() {
+        document.getElementsByClassName('conn-error')[0].remove();
+    }, 8000);
     return err;
 }
 

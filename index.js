@@ -705,6 +705,15 @@ async function grabLiveUser(d)
     );
 }
 
+async function loggingOut(u)
+{
+    await pool.query
+    (
+        'DELETE FROM sessions WHERE user = ?',
+        [u]
+    );
+}
+
 app.post('/room', async function(req, res)
 {
     var id = req.body.socket;
@@ -878,6 +887,13 @@ app.post('/friendlist', async function(req, res)
     var liveUsers = await grabOnline(username);
 
     res.send({live: liveUsers[0], sleep: sleptUsers[0]}).end();
+});
+
+app.put('/logout', async function(req, res)
+{
+    var u = req.body.user;
+    await loggingOut(u);
+    res.end();
 });
 
 io.on('connection', socket => {
