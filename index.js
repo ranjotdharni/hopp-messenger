@@ -32,10 +32,7 @@ const pool = mysql.createPool(
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
-        timezone: '-05:00',
-        ssl: {
-            rejectUnauthorized: true,
-        }
+        timezone: '-05:00'
     }
 ).promise();
 
@@ -363,8 +360,8 @@ async function makeRoom(host, id, name, private)
 {
     await pool.query
     (
-        'INSERT INTO rooms (host1, room_id, name, private) VALUES (?, ?, ?, ?)',
-        [host, id, name, private]
+        'INSERT INTO rooms (room_id, host1, name, private) VALUES (?, ?, ?, ?)',
+        [id, host, name, private]
     );
 }
 
@@ -762,7 +759,6 @@ app.put('/room', async function(req, res)
     }
 
     await makeRoom(newHost, newRoomID, roomName, live);
-    console.log('Room created with ID ' + newRoomID);
     res.send(JSON.parse('{"room_id":"' + newRoomID + '", "host":"' + newHost + '", "room_name":"' + roomName + '", "private":' + live + '}')).end();
 });
 
