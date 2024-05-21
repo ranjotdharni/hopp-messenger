@@ -36,10 +36,12 @@ async function freshHarvest()
         resources[i] = new Array(5);
     }
 
+    const albums = ["4iqbFIdGOTzXeDtt9owjQn", "60s0PMYFJhe34io9HuyUXf", "2RRYaYHY7fIIdvFlvgb5vq", "5JjnoGJyOxfSZUZtk2rRwZ", "6rhqubsiXPVRZHBmJT5vs1", "32bR4LcEc1PvJEhaKoo4ZN"]
+
     console.log('Instantiating fresh resources...');
-    let buffer = await fetch("https://api.spotify.com/v1/albums?ids=4lPh818nqtqiPwqOGEGA1b%2C2ODvWsOgouMbaA5xf0RkJe" 
-        + "%2C0MV1yCXcNNQBfwApqAVkH0%2C79dL7FLiJFOO0EoehUHQBv" 
-        + "%2C4vLYreWxd2ptOAzPwTyBI3%2C5Gm2XKBgnlzd6qTi7LE1z2&market=US", {
+    let buffer = await fetch(`https://api.spotify.com/v1/albums?ids=${albums[0]}%2C${albums[1]}` 
+        + `%2C${albums[2]}%2C${albums[3]}` 
+        + `%2C${albums[4]}%2C${albums[5]}&market=US`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
