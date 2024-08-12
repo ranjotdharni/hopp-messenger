@@ -127,7 +127,7 @@ app.post('/portal', async function(req, res)
 
     if (result instanceof Error)
     {
-        console.log("[duplicate entry; not injected]");
+        console.log(result.message);
         res.send(JSON.parse('{"status":401, "message":"User already exists"}')).end();
     }
     else
@@ -517,7 +517,7 @@ async function grabPublicFriends(u)
 {
     return await pool.query
     (
-        `SELECT a.username AS username, b.room_id FROM live a, rooms b WHERE a.username IN (SELECT CASE WHEN friend1 = ? THEN friend2 WHEN friend2 = ? THEN friend1 END FROM friends) AND a.socket1 IN (SELECT host1 AS socket1 WHERE host1 = a.socket1 AND private = 0)`,
+        `SELECT a.username AS username, b.room_id FROM live a, rooms b WHERE a.username IN (SELECT CASE WHEN friend1 = ? THEN friend2 WHEN friend2 = ? THEN friend1 END FROM friends) AND a.socket1 IN (SELECT host1 AS socket1 FROM rooms WHERE host1 = a.socket1 AND private = 0)`,
         [u, u]
     );
 }
